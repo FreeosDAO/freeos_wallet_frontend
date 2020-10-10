@@ -2,15 +2,9 @@
   <q-layout view="hHh Lpr fFf">
 
     <q-header reveal elevated class="bg-primary" height-hint="98">
-      <q-toolbar>
+      <q-toolbar style="justify-content: space-between;">
         <q-btn dense flat round icon="menu" @click="drawer = !drawer" />
-
-        <q-toolbar-title class="fixed-right q-mr-md q-mt-xs">
-          <q-avatar>
-            <q-icon size='md' name="face" />
-          </q-avatar>
-          {{username}}
-        </q-toolbar-title>
+        <LoginAndRegisterDialog></LoginAndRegisterDialog>
       </q-toolbar>
     </q-header>
 
@@ -70,6 +64,7 @@
 </template>
 
 <script>
+import LoginAndRegisterDialog from '../components/LoginAndRegisterDialog'
 const menuList = [
   {
     icon: 'monetization_on',
@@ -103,12 +98,13 @@ const menuList = [
     route: '/account'
   }
 ]
-
 export default {
+  components: {
+    LoginAndRegisterDialog
+  },
   data () {
     return {
       drawer: false,
-      username: 'tommccann333',
       menuList
     }
   }

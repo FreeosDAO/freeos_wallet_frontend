@@ -9,7 +9,7 @@ npm install
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-quasar dev
+quasar dev or yarn start
 ```
 
 ### Lint the files
