@@ -4,7 +4,10 @@
     <q-header reveal elevated class="bg-primary" height-hint="98">
       <q-toolbar style="justify-content: space-between;">
         <q-btn dense flat round icon="menu" @click="drawer = !drawer" />
-        <LoginAndRegisterDialog></LoginAndRegisterDialog>
+        <div style="display: flex;">
+          <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>
+          <LoginAndRegisterDialog></LoginAndRegisterDialog>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -64,7 +67,9 @@
 </template>
 
 <script>
-import LoginAndRegisterDialog from '../components/LoginAndRegisterDialog'
+import LoginAndRegisterDialog from '../components/account-management/LoginAndRegisterDialog'
+import { Api, JsonRpc } from 'eosjs'
+import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 const menuList = [
   {
     icon: 'monetization_on',
@@ -106,6 +111,51 @@ export default {
     return {
       drawer: false,
       menuList
+    }
+  },
+  methods: {
+    async TOMconnect (action, dataValue) {
+      // const privateKey = localStorage.getItem('freeos_key')
+      console.log(localStorage.getItem('freeos_account'))
+      //  const privateKey = this.key
+      //  const rpc = new JsonRpc('https://kylin-dsp-1.liquidapps.io/')
+      //  const signatureProvider = new JsSignatureProvider([privateKey])
+      // transit library
+      const privateKey = this.key
+      const rpc = new JsonRpc('https://kylin-dsp-1.liquidapps.io/')
+      const signatureProvider = new JsSignatureProvider([privateKey])
+      const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
+      const resultWithConfig = await api.transact({
+        actions: [{
+          account: 'freeos333333',
+          name: action,
+          authorization: [{
+            actor: 'tommccann333',
+            permission: 'active'
+          }],
+          data: {
+            user: 'tommccann333',
+            account_type: 'e',
+            permission: 'active',
+            threshold: 50000
+            // auth: {
+            //   'threshold': 1,
+            //   'keys': [{
+            //     'key': "5JddzsLKQkPFGZxTiUSZJf6WQXkx1ivsqNBpErZV5LEvC87CzoS",
+            //     'weight': 1
+            //   }],
+            // }
+          }
+        }]
+      }, {
+        blocksBehind: 3,
+        expireSeconds: 30
+      })
+      console.log(resultWithConfig)
+      return resultWithConfig
+    },
+    onTomTest () {
+      this.TOMconnect('reguser', 'freeos333333')
     }
   }
 }
