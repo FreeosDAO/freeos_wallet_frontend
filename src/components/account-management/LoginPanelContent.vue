@@ -43,7 +43,7 @@
           Please check your email including spam folder
         </div>
         <div class="q-mt-xl">
-          <q-input filled v-model="signinEmailCode" type="text" />
+          <q-input filled ref="mySigninEmailCode" v-model="signinEmailCode" type="text" :rules="[val => !!val || 'Required']" />
         </div>
         <div class="text-center q-mt-sm q-mb-xl">
           <q-btn flat color="primary" no-caps @click="onSigninEmailResend()">Resend</q-btn>
@@ -65,14 +65,15 @@ export default {
   data () {
     return {
       tab: 'signin',
-      signinEmail: 'test@gmail.com',
-      signinEmailCode: 'QlB3EI',
+      signinEmail: '',
+      signinEmailCode: '',
       signinStep: 1
     }
   },
   methods: {
     onRegularLogin () {
-      if (this.signinEmail && this.isValidEmail(this.signinEmail) !== 'Invalid email') {
+      this.$refs.mySigninEmail.validate()
+      if (!this.$refs.mySigninEmail.hasError) {
         this.$refs.signinStepper.next()
       }
     },
@@ -82,10 +83,13 @@ export default {
     },
     onSigninEmailResend () {},
     onSigninFinish () {
-      this.$emit('onSigninFinish', {
-        isFinished: true,
-        username: 'Tom'
-      })
+      this.$refs.mySigninEmailCode.validate()
+      if (!this.$refs.mySigninEmailCode.hasError) {
+        this.$emit('onSigninFinish', {
+          isFinished: true,
+          username: 'Tom(Signed)'
+        })
+      }
     }
   }
 }

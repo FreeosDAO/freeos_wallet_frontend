@@ -1,11 +1,13 @@
 <template>
   <div>
-    <q-toolbar-title v-if="username" class="fixed-right q-mr-md q-mt-xs">
-      <q-avatar>
-        <q-icon size='md' name="face" />
-      </q-avatar>
-      {{username}}
-    </q-toolbar-title>
+    <div>
+      <q-toolbar-title v-if="username" class="q-mr-md q-mt-xs">
+        <q-avatar>
+          <q-icon size='md' name="face" />
+        </q-avatar>
+        {{username}}
+      </q-toolbar-title>
+    </div>
     <q-btn flat v-if="!username" @click="isShowDialog=true">Sign up</q-btn>
     <q-dialog
       v-model="isShowDialog"
@@ -31,7 +33,7 @@
             <LoginPanelContent v-on:onSigninFinish="onSigninFinish"></LoginPanelContent>
           </q-tab-panel>
           <q-tab-panel name="register">
-            <RegisterPanelContent></RegisterPanelContent>
+            <RegisterPanelContent v-on:onRegisterFinish="onRegisterFinish"></RegisterPanelContent>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -57,6 +59,12 @@ export default {
   },
   methods: {
     onSigninFinish (event) {
+      if (event.isFinished) {
+        this.username = event.username
+        this.isShowDialog = false
+      }
+    },
+    onRegisterFinish (event) {
       if (event.isFinished) {
         this.username = event.username
         this.isShowDialog = false
