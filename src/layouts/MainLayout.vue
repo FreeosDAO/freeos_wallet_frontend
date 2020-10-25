@@ -23,7 +23,7 @@
         <q-list>
 
           <template v-for="(menuItem, index) in menuList">
-            <q-item :key="index" clickable :active="menuItem.label === 'Claim'" v-ripple @click="$router.replace('menuItem.route')">
+            <q-item :key="index" clickable :active="menuItem.label === 'Claim'" v-ripple @click="($route.path !== menuItem.route)&&$router.push(menuItem.route)">
                 <q-item-section avatar>
                   <q-icon :name="menuItem.icon" />
                 </q-item-section>
@@ -162,7 +162,4 @@ export default {
 </script>
 
 <style lang="scss">
-// .header {
-//   color: $primary;
-// }
 </style>
