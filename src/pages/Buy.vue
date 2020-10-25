@@ -3,7 +3,7 @@
     <div class="q-ma-md text-h6">
       Buy tokens
     </div>
-    <div class="q-pa-md q-ml-auto q-mr-auto" style="width: 60%;">
+    <div class="q-pa-md q-ml-auto q-mr-auto" style="width: 70%;">
       <q-input
         dense
         v-model.number="amount"
@@ -12,10 +12,10 @@
         placeholder="Amount"
       />
     </div>
-    <div class="q-pa-md q-ml-auto q-mr-auto" style="width: 60%;">
+    <div class="q-pa-md q-ml-auto q-mr-auto" style="width: 70%;">
       <q-select dense outlined v-model="buySelectModel" :options="buySelectOptions" label="Choose token to buy" />
     </div>
-    <div class="q-pa-md q-ml-auto q-mr-auto" style="width: 60%;">
+    <div class="q-pa-md q-ml-auto q-mr-auto" style="width: 70%;">
       <q-select dense outlined v-model="paySelectModel" :options="paySelectOptions" label="Choose token to pay with" />
     </div>
     <div class="q-mt-lg row full-width justify-around">

@@ -15,15 +15,13 @@
       v-model="drawer"
       :width="200"
       :breakpoint="800"
-      overlay
       bordered
-      content-class="bg-grey-3"
+      content-class="bg-grey-0"
     >
       <q-scroll-area class="fit">
         <q-list>
-
           <template v-for="(menuItem, index) in menuList">
-            <q-item :key="index" clickable :active="menuItem.label === 'Claim'" v-ripple @click="($route.path !== menuItem.route)&&$router.push(menuItem.route)">
+            <q-item :key="index" clickable :active="selectedItemLabel === menuItem.label" active-class="bg-grey-4" v-ripple @click="onSelectMenu(menuItem)">
                 <q-item-section avatar>
                   <q-icon :name="menuItem.icon" />
                 </q-item-section>
@@ -33,18 +31,6 @@
             </q-item>
             <q-separator :key="'sep' + index" v-if="menuItem.separator" />
           </template>
-          <!-- <template v-for="(menuItem, index) in menuList">
-            <q-side-link item :key="index" clickable :active="menuItem.route === $route.path" v-ripple :to="menuItem.route">
-                <q-item-side avatar>
-                  <q-icon :name="menuItem.icon" />
-                </q-item-side>
-                <q-item-main>
-                  {{ menuItem.label }}
-                </q-item-main>
-            </q-side-link>
-            <q-separator :key="'sep' + index" v-if="menuItem.separator" />
-          </template> -->
-
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -110,10 +96,15 @@ export default {
   data () {
     return {
       drawer: false,
+      selectedItemLabel: null,
       menuList
     }
   },
   methods: {
+    onSelectMenu (menuItem) {
+      (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
+      this.selectedItemLabel = menuItem.label
+    },
     async TOMconnect (action, dataValue) {
       // const privateKey = localStorage.getItem('freeos_key')
       console.log(localStorage.getItem('freeos_account'))
