@@ -19,7 +19,7 @@
               />
             </div>
             <div class="q-ma-md q-mt-lg">
-              <q-btn color="primary" no-caps label="Stake" />
+              <q-btn color="primary" @click="onStake" no-caps label="Stake" />
             </div>
           </q-card-section>
         </q-card>
@@ -39,7 +39,7 @@
               />
             </div>
             <div class="q-ma-md q-mt-lg">
-              <q-btn color="primary" no-caps label="Unstake" @click="unstakeAmount&&(isShowUnstakeDialog=true)" />
+              <q-btn color="primary" no-caps label="Unstake" @click="onUnStake" />
             </div>
           </q-card-section>
         </q-card>
@@ -108,6 +108,8 @@
 </template>
 
 <script>
+import ApiCall from 'src/services/api-call'
+
 export default {
   name: 'StakeAndUnstake',
   data () {
@@ -117,7 +119,16 @@ export default {
       isShowUnstakeDialog: false
     }
   },
-  methods: {}
+  methods: {
+    onStake () {
+      const requiredStake = ApiCall.getUserStakeRequirement('yvetecoleman')
+      ApiCall.actionStake('yvetecoleman', requiredStake)
+    },
+    onUnStake () {
+      ApiCall.actionUnstake('yvetecoleman')
+      // this.unstakeAmount && (this.isShowUnstakeDialog = true)
+    }
+  }
 }
 </script>
 

@@ -4,7 +4,7 @@
       <img src="~assets/freeos_icon.png">
     </div>
     <div class="q-ma-md q-mt-lg">
-      <q-btn color="primary" no-caps label="Claim FreeOS" />
+      <q-btn color="primary" @click="onClaim" no-caps label="Claim FreeOS" />
     </div>
     <div class="q-ma-md">
       Next claim will be available in 3 days
@@ -28,11 +28,17 @@
 </template>
 
 <script>
+import ApiCall from 'src/services/api-call'
 export default {
   name: 'Claim',
   data () {
     return {
       isNotification: true
+    }
+  },
+  methods: {
+    async onClaim () {
+      ApiCall.actionClaim('yvetecoleman')
     }
   }
 }

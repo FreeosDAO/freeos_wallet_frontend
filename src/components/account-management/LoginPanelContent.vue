@@ -29,7 +29,7 @@
           OR
         </div>
         <div class="text-center">
-          <q-btn color="primary" no-caps>Login using EOS wallet</q-btn>
+          <q-btn color="primary" @click="onLoginByWallet" no-caps>Login using EOS wallet</q-btn>
         </div>
       </q-step>
       <q-step
@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import ApiCall from 'src/services/api-call'
 export default {
   name: 'LoginPanelContent',
   data () {
@@ -71,6 +72,9 @@ export default {
     }
   },
   methods: {
+    onLoginByWallet () {
+      ApiCall.actionReguser('yvetecoleman', 'e')
+    },
     onRegularLogin () {
       this.$refs.mySigninEmail.validate()
       if (!this.$refs.mySigninEmail.hasError) {
