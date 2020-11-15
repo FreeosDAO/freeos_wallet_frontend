@@ -1,7 +1,7 @@
 <template>
   <div class="text-center">
     <div class="q-ma-md">
-      <img src="~assets/freeos_icon.png">
+      <img style="width: 150px;" src="~assets/freeos_icon.png">
     </div>
     <div class="q-ma-md q-mt-lg">
       <q-btn color="primary" @click="onClaim" no-caps label="Claim FreeOS" />
