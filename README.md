@@ -2,6 +2,11 @@
 
 Application to claim your FreeOS tokens
 
+# Clone the repository
+```bash
+git clone https://github.com/FreeosDAO/freeos_wallet_frontend.git
+```
+
 ## Install the dependencies
 ```bash
 npm install
@@ -9,18 +14,14 @@ npm install
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-quasar dev or yarn start
+npm start
 ```
 
-### Lint the files
+# Browser will be triggered with Local URL and Port 
 ```bash
-npm run lint
+http://localhost:8080/
 ```
 
-### Build the app for production
-```bash
-quasar build
-```
 
 ### Customize the configuration
 See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
