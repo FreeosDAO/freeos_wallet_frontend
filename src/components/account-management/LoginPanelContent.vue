@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import ApiCall from 'src/services/api-call'
+// import ApiCall from 'src/services/api-call'
 export default {
   name: 'LoginPanelContent',
   data () {
@@ -73,13 +73,15 @@ export default {
   },
   methods: {
     onLoginByWallet () {
-      ApiCall.actionReguser('yvetecoleman', 'e')
+      // ApiCall.actionReguser('yvetecoleman', 'e')
+      this.successSigninEmit()
     },
     onRegularLogin () {
-      this.$refs.mySigninEmail.validate()
-      if (!this.$refs.mySigninEmail.hasError) {
-        this.$refs.signinStepper.next()
-      }
+      // this.$refs.mySigninEmail.validate()
+      // if (!this.$refs.mySigninEmail.hasError) {
+      //   this.$refs.signinStepper.next()
+      // }
+      this.successSigninEmit()
     },
     isValidEmail (val) {
       const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/
@@ -89,11 +91,14 @@ export default {
     onSigninFinish () {
       this.$refs.mySigninEmailCode.validate()
       if (!this.$refs.mySigninEmailCode.hasError) {
-        this.$emit('onSigninFinish', {
-          isFinished: true,
-          username: 'Tom(Signed)'
-        })
+        this.successSigninEmit()
       }
+    },
+    successSigninEmit () {
+      this.$emit('onSigninFinish', {
+        isFinished: true,
+        username: 'Tom(Signed)'
+      })
     }
   }
 }

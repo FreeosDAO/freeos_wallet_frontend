@@ -3,10 +3,10 @@
 
     <q-header reveal elevated class="bg-primary" height-hint="98">
       <q-toolbar style="justify-content: space-between;">
-        <q-btn dense flat round icon="menu" @click="drawer = !drawer" />
+        <q-btn :style="'visibility: ' + (isShowDrawerButton ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
         <div style="display: flex;">
           <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>
-          <LoginAndRegisterDialog></LoginAndRegisterDialog>
+          <LoginAndRegisterDialog v-on:onSigninFinish="onSigninFinish"></LoginAndRegisterDialog>
         </div>
       </q-toolbar>
     </q-header>
@@ -36,6 +36,31 @@
     </q-drawer>
 
     <q-page-container>
+      <div class="text-center q-ma-md row">
+        <div class="col-md-5"></div>
+        <div class="col-xs-12 col-md-2 q-mb-md">
+          <img width="110" src="~assets/freeos_icon.png">
+        </div>
+        <div v-if="isShowDrawerButton" class="col-xs-12 col-md-5 row text-left">
+          <div class="col-xs-3"></div>
+          <div class="col-xs-8">
+            <div class="row">
+              <div class="col-5">Liquid XPR: </div>
+              <div class="col-5 text-primary text-weight-bold">0.0214 XPR</div>
+            </div>
+            <q-separator class="q-mt-sm q-mb-sm" />
+            <div class="row">
+              <div class="col-5">Staked XPR: </div>
+              <div class="col-5 text-primary text-weight-bold">1,111 XPR</div>
+            </div>
+            <q-separator class="q-mt-sm q-mb-sm" />
+            <div class="row text-green text-weight-bold">
+              <div class="col-5">Total FREEOS: </div>
+              <div class="col-5">150 FREEOS</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <router-view />
     </q-page-container>
 
@@ -75,16 +100,16 @@ const menuList = [
     separator: true,
     route: '/stake'
   },
+  // {
+  //   icon: 'account_balance_wallet',
+  //   label: 'Buy',
+  //   separator: true,
+  //   route: '/buy'
+  // },
   {
-    icon: 'account_balance_wallet',
-    label: 'Buy',
-    separator: true,
-    route: '/buy'
-  },
-  {
-    icon: 'account_circle',
+    icon: 'info',
     iconColor: 'primary',
-    label: 'Account',
+    label: 'Info',
     separator: false,
     route: '/account'
   }
@@ -95,12 +120,20 @@ export default {
   },
   data () {
     return {
+      isShowDrawerButton: false,
       drawer: false,
       selectedItemLabel: null,
       menuList
     }
   },
   methods: {
+    onSigninFinish (event) {
+      if (event.isFinished) {
+        this.isShowDrawerButton = true
+        this.drawer = true
+        this.onSelectMenu(menuList[0])
+      }
+    },
     onSelectMenu (menuItem) {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label

@@ -8,7 +8,7 @@
         {{username}}
       </q-toolbar-title>
     </div>
-    <q-btn flat v-if="!username" @click="isShowDialog=true">Sign up</q-btn>
+    <q-btn no-caps flat v-if="!username" @click="isShowDialog=true">Login</q-btn>
     <q-dialog
       v-model="isShowDialog"
     >
@@ -62,6 +62,10 @@ export default {
       if (event.isFinished) {
         this.username = event.username
         this.isShowDialog = false
+        this.$emit('onSigninFinish', {
+          isFinished: event.isFinished,
+          username: event.username
+        })
       }
     },
     onRegisterFinish (event) {
