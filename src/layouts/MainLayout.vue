@@ -2,15 +2,12 @@
   <q-layout view="hHh Lpr fFf">
 
     <q-header reveal elevated class="bg-primary" height-hint="98">
-      <q-toolbar>
-        <q-btn dense flat round icon="menu" @click="drawer = !drawer" />
-
-        <q-toolbar-title class="fixed-right q-mr-md q-mt-xs">
-          <q-avatar>
-            <q-icon size='md' name="face" />
-          </q-avatar>
-          {{username}}
-        </q-toolbar-title>
+      <q-toolbar style="justify-content: space-between;">
+        <q-btn :style="'visibility: ' + (isShowDrawerButton ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
+        <div style="display: flex;">
+          <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>
+          <LoginAndRegisterDialog v-on:onSigninFinish="onSigninFinish"></LoginAndRegisterDialog>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -18,15 +15,13 @@
       v-model="drawer"
       :width="200"
       :breakpoint="800"
-      overlay
       bordered
-      content-class="bg-grey-3"
+      content-class="bg-grey-0"
     >
       <q-scroll-area class="fit">
         <q-list>
-
           <template v-for="(menuItem, index) in menuList">
-            <q-item :key="index" clickable :active="menuItem.label === 'Claim'" v-ripple @click="$router.replace('menuItem.route')">
+            <q-item :key="index" clickable :active="selectedItemLabel === menuItem.label" active-class="bg-grey-4" v-ripple @click="onSelectMenu(menuItem)">
                 <q-item-section avatar>
                   <q-icon :name="menuItem.icon" />
                 </q-item-section>
@@ -36,23 +31,36 @@
             </q-item>
             <q-separator :key="'sep' + index" v-if="menuItem.separator" />
           </template>
-          <!-- <template v-for="(menuItem, index) in menuList">
-            <q-side-link item :key="index" clickable :active="menuItem.route === $route.path" v-ripple :to="menuItem.route">
-                <q-item-side avatar>
-                  <q-icon :name="menuItem.icon" />
-                </q-item-side>
-                <q-item-main>
-                  {{ menuItem.label }}
-                </q-item-main>
-            </q-side-link>
-            <q-separator :key="'sep' + index" v-if="menuItem.separator" />
-          </template> -->
-
         </q-list>
       </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
+      <div class="text-center q-ma-md row">
+        <div class="col-md-5"></div>
+        <div class="col-xs-12 col-md-2 q-mb-md">
+          <img width="110" src="~assets/freeos_icon.png">
+        </div>
+        <div v-if="isShowDrawerButton" class="col-xs-12 col-md-5 row text-left">
+          <div class="col-xs-3"></div>
+          <div class="col-xs-8">
+            <div class="row">
+              <div class="col-5">Liquid XPR: </div>
+              <div class="col-5 text-primary text-weight-bold">0.0214 XPR</div>
+            </div>
+            <q-separator class="q-mt-sm q-mb-sm" />
+            <div class="row">
+              <div class="col-5">Staked XPR: </div>
+              <div class="col-5 text-primary text-weight-bold">1,111 XPR</div>
+            </div>
+            <q-separator class="q-mt-sm q-mb-sm" />
+            <div class="row text-green text-weight-bold">
+              <div class="col-5">Total FREEOS: </div>
+              <div class="col-5">150 FREEOS</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <router-view />
     </q-page-container>
 
@@ -70,6 +78,9 @@
 </template>
 
 <script>
+import LoginAndRegisterDialog from '../components/account-management/LoginAndRegisterDialog'
+import { Api, JsonRpc } from 'eosjs'
+import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 const menuList = [
   {
     icon: 'monetization_on',
@@ -89,34 +100,90 @@ const menuList = [
     separator: true,
     route: '/stake'
   },
+  // {
+  //   icon: 'account_balance_wallet',
+  //   label: 'Buy',
+  //   separator: true,
+  //   route: '/buy'
+  // },
   {
-    icon: 'account_balance_wallet',
-    label: 'Buy',
-    separator: true,
-    route: '/buy'
-  },
-  {
-    icon: 'account_circle',
+    icon: 'info',
     iconColor: 'primary',
-    label: 'Account',
+    label: 'Info',
     separator: false,
     route: '/account'
   }
 ]
-
 export default {
+  components: {
+    LoginAndRegisterDialog
+  },
   data () {
     return {
+      isShowDrawerButton: false,
       drawer: false,
-      username: 'tommccann333',
+      selectedItemLabel: null,
       menuList
+    }
+  },
+  methods: {
+    onSigninFinish (event) {
+      if (event.isFinished) {
+        this.isShowDrawerButton = true
+        this.drawer = true
+        this.onSelectMenu(menuList[0])
+      }
+    },
+    onSelectMenu (menuItem) {
+      (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
+      this.selectedItemLabel = menuItem.label
+    },
+    async TOMconnect (action, dataValue) {
+      // const privateKey = localStorage.getItem('freeos_key')
+      console.log(localStorage.getItem('freeos_account'))
+      //  const privateKey = this.key
+      //  const rpc = new JsonRpc('https://kylin-dsp-1.liquidapps.io/')
+      //  const signatureProvider = new JsSignatureProvider([privateKey])
+      // transit library
+      const privateKey = this.key
+      const rpc = new JsonRpc('https://kylin-dsp-1.liquidapps.io/')
+      const signatureProvider = new JsSignatureProvider([privateKey])
+      const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
+      const resultWithConfig = await api.transact({
+        actions: [{
+          account: 'freeos333333',
+          name: action,
+          authorization: [{
+            actor: 'tommccann333',
+            permission: 'active'
+          }],
+          data: {
+            user: 'tommccann333',
+            account_type: 'e',
+            permission: 'active',
+            threshold: 50000
+            // auth: {
+            //   'threshold': 1,
+            //   'keys': [{
+            //     'key': "5JddzsLKQkPFGZxTiUSZJf6WQXkx1ivsqNBpErZV5LEvC87CzoS",
+            //     'weight': 1
+            //   }],
+            // }
+          }
+        }]
+      }, {
+        blocksBehind: 3,
+        expireSeconds: 30
+      })
+      console.log(resultWithConfig)
+      return resultWithConfig
+    },
+    onTomTest () {
+      this.TOMconnect('reguser', 'freeos333333')
     }
   }
 }
 </script>
 
 <style lang="scss">
-// .header {
-//   color: $primary;
-// }
 </style>
