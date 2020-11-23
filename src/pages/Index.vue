@@ -13,8 +13,12 @@
       </div>
     </div>
     <div class="q-mt-lg q-mb-lg">
-      <img width="120" class="q-mr-md" src="~assets/ios_download_button.png">
-      <img width="120" src="~assets/android_download_button.png">
+      <a target="_blank" href="https://testflight.apple.com/join/FxEvUtHs">
+        <img style="cursor: pointer;" width="120" class="q-mr-md" src="~assets/ios_download_button.png">
+      </a>
+      <a target="_blank" href="https://play.google.com/store/apps/details?id=com.metallicus.protonwallet">
+        <img style="cursor: pointer;" width="120" src="~assets/android_download_button.png">
+      </a>
     </div>
     <div class="q-mt-lg q-mb-lg">
       <div class="text-h6 text-weight-regular">

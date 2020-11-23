@@ -6,7 +6,7 @@
         <q-btn :style="'visibility: ' + (isShowDrawerButton ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
         <div style="display: flex;">
           <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>
-          <LoginAndRegisterDialog v-on:onSigninFinish="onSigninFinish"></LoginAndRegisterDialog>
+          <WalletLoginDialog v-on:onSigninFinish="onSigninFinish"></WalletLoginDialog>
         </div>
       </q-toolbar>
     </q-header>
@@ -78,9 +78,9 @@
 </template>
 
 <script>
-import LoginAndRegisterDialog from '../components/account-management/LoginAndRegisterDialog'
 import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
+import WalletLoginDialog from 'components/account-management/WalletLoginDialog'
 const menuList = [
   {
     icon: 'monetization_on',
@@ -116,7 +116,7 @@ const menuList = [
 ]
 export default {
   components: {
-    LoginAndRegisterDialog
+    WalletLoginDialog
   },
   data () {
     return {
