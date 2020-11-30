@@ -26,7 +26,8 @@
           <div class="q-gutter-lg text-center">
             <q-btn color="dark" label="Proton Wallet" @click="onLogin()" />
             <q-btn color="dark" label="Anchor" />
-            <q-btn color="dark" label="Scatter" />
+<!--            <q-btn color="dark" label="Scatter" />-->
+            <Login></Login>
             <q-btn color="dark" label="Ledger S/X" />
             <q-btn color="dark" label="Trezor" />
             <q-btn color="dark" label="SimplEOS" />
@@ -42,8 +43,13 @@
   </div>
 </template>
 <script>
+import Login from 'components/wallets/Login'
+
 export default {
   name: 'WalletLoginDialog',
+  components: {
+    Login
+  },
   data () {
     return {
       username: '',
