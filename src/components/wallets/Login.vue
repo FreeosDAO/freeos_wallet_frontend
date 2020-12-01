@@ -1,12 +1,12 @@
 <template>
   <div>
     <!-- Login dropdown (if logged out)-->
-    <div v-if="!state.accountInfo && !mobileWallet">
+    <div v-if="!authInfo.accountInfo && !mobileWallet">
       <q-btn @click="connectWallet('scatter')" color="dark" label="Scatter" />
 <!--      <el-dropdown trigger="click">-->
-<!--        <el-button :loading="progress">-->
+<!--        <q-btn :loading="progress">-->
 <!--          {{("Login")}} <i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>-->
-<!--        </el-button>-->
+<!--        </q-btn>-->
 <!--        <el-dropdown-menu slot="dropdown">-->
 <!--          <el-dropdown-item>-->
 <!--            <div @click="connectWallet('scatter')">-->
@@ -24,20 +24,20 @@
     </div>
 
     <!-- Account info and actions (if logged in) -->
-    <div v-else-if="state.accountInfo">
-      <el-button @click="logout" style="margin-bottom:20px;" :disabled="mobileWallet">
+    <div v-else-if="authInfo.accountInfo">
+      <q-btn @click="logout" style="margin-bottom:20px;" :disabled="mobileWallet">
         {{ wallet.accountInfo.account_name }} <i v-show="!mobileWallet" style="margin-left:5px;" class="el-icon-close"></i>
-      </el-button><br>
-      <p style="color:grey;">Balance: {{state.accountInfo.core_liquid_balance}}</p>
+      </q-btn><br>
+      <p style="color:grey;">Balance: {{authInfo.accountInfo.core_liquid_balance}}</p>
       <div v-if="voting && !finishedVoting">
-        <div v-if="state.accountInfo.voter_info.proxy.length>0" style="color:grey;">You are currently voting for proxy: {{state.accountInfo.voter_info.proxy}}</div>
-        <div v-else style="color:grey;">You are currently voting for {{state.accountInfo.voter_info.producers.length}} producers</div>
+        <div v-if="authInfo.accountInfo.voter_info.proxy.length>0" style="color:grey;">You are currently voting for proxy: {{authInfo.accountInfo.voter_info.proxy}}</div>
+        <div v-else style="color:grey;">You are currently voting for {{authInfo.accountInfo.voter_info.producers.length}} producers</div>
         <br>
-        <el-button size="small" @click="vote">Refresh your vote</el-button>
+        <q-btn size="small" @click="vote">Refresh your vote</q-btn>
       </div>
       <div v-if="!voting">
         <p style="color:grey;">You have never voted with this account, please vote for EOS Titan Proxy</p>
-        <el-button size="small" @click="vote">Vote EOS Titan</el-button>
+        <q-btn size="small" @click="vote">Vote EOS Titan</q-btn>
       </div>
       <div v-if="finishedVoting">
         <p style="color:grey;">Thank you for voting and testing Transit API !</p>
@@ -56,14 +56,14 @@
 <!--          <div :title="a.key" class="pubKey">{{ a.key }}</div>-->
 <!--          <div style="margin-top:10px;padding:0;">-->
 <!--            <transition-group name="el-zoom-in-center">-->
-<!--              <el-button v-for="(act, j) in a.accounts" :key="'index'+j" class="accountButton" small @click="accountLogin(a.index, j)">-->
+<!--              <q-btn v-for="(act, j) in a.accounts" :key="'index'+j" class="accountButton" small @click="accountLogin(a.index, j)">-->
 <!--                <span class="accountName">{{ act.account }}</span>-->
 <!--                <span class="accountAuth">{{ act.authorization }}</span>-->
-<!--              </el-button>-->
+<!--              </q-btn>-->
 <!--            </transition-group>-->
 <!--          </div>-->
 <!--        </div>-->
-<!--        <el-button small @click="accountsModal=false">Hide</el-button>-->
+<!--        <q-btn small @click="accountsModal=false">Hide</q-btn>-->
 <!--      </div>-->
 <!--    </transition>-->
   </div>
@@ -76,6 +76,7 @@ import lynx from 'eos-transit-lynx-provider'
 import tp from 'eos-transit-tokenpocket-provider'
 import meetone from 'eos-transit-meetone-provider'
 
+import { mapState } from 'vuex'
 export default {
   name: 'Login',
   data () {
@@ -87,7 +88,6 @@ export default {
       message: {},
       accessContext: null,
       wallet: null,
-      state: {},
       walletId: 'scatter',
       discoveryData: []
     }
@@ -116,7 +116,9 @@ export default {
     } else this.initTransit() // if client is not using a mobile wallet
   },
   computed: {
-
+    ...mapState({
+      authInfo: state => state.auth.authInfo
+    }),
     // reactive accounts list of all discovered public keys
     accounts () {
       var list = []
@@ -127,9 +129,9 @@ export default {
       }
       return list
     },
-    progress () { return this.state.connecting || this.state.authenticating || this.state.fetchingAccount || false },
+    progress () { return this.authInfo.connecting || this.authInfo.authenticating || this.authInfo.fetchingAccount || false },
     voting () {
-      if (this.state.accountInfo.voter_info && (this.state.accountInfo.voter_info.proxy.length > 0 || this.state.accountInfo.voter_info.producers.length > 0)) { return true } else return false
+      if (this.authInfo.accountInfo.voter_info && (this.authInfo.accountInfo.voter_info.proxy.length > 0 || this.authInfo.accountInfo.voter_info.producers.length > 0)) { return true } else return false
     }
   },
   methods: {
@@ -172,7 +174,7 @@ export default {
 
       // Subscrible to Transit wallet changes and bind it to a vue variable
       this.wallet.subscribe(walletState => {
-        this.state = walletState
+        this.$store.commit('auth/UPDATE_AUTH', walletState)
       })
 
       this.startLogin(walletId)
@@ -189,18 +191,20 @@ export default {
         if (this.discoveryData.keyToAccountMap.length === 0) { await this.wallet.login() } else {
           // if wallet provides one or more public keys (eg. ledger), allow user to choose desired account
           this.accountsModal = true
-          this.message.connecting.close()
-          this.message.authenticating = this.$notify.info({
-            title: 'Authenticating', message: `Choose account on ${this.walletId}`, duration: 0
+          this.message.connecting.dismiss()
+          this.message.authenticating = this.$q.notify({
+            color: 'info',
+            message: `Choose account on ${this.walletId}`,
+            timeout: 0
           })
           // start async discovery on additional indices
           this.discoverMore(10)
         }
       } catch (ex) {
-        this.message.connecting.close()
+        this.message.connecting.dismiss()
         if (this.walletId === 'ledger') {
-          this.$notify.error({
-            title: 'Error', message: 'Cannot connect to Ledger', duration: 5000
+          this.$q.notify({
+            color: 'negative', message: 'Cannot connect to Ledger', timeout: 5000
           })
         }
       }
@@ -208,74 +212,98 @@ export default {
     async accountLogin (index = 0, accountIndex = 0) {
       var keyObj = this.discoveryData.keyToAccountMap[index]
       await this.wallet.login(keyObj.accounts[accountIndex].account, keyObj.accounts[accountIndex].authorization)
-      this.message.authenticating.close()
+      this.message.authenticating.dismiss()
     },
     async logout () {
       // null autologin
       localStorage.removeItem('autoLogin')
-      this.message.logout = this.$notify.info({ title: 'Logging out', duration: 0 })
+      this.message.logout = this.$q.notify({
+        color: 'info',
+        message: 'Logging out',
+        timeout: 0
+      })
       await this.wallet.terminate()
-      this.message.logout.close()
-      this.message.logout = this.$notify.success({
-        title: 'You have logged out successfully', duration: 3000
+      this.message.logout.dismiss()
+      this.message.logout = this.$q.notify({
+        color: 'positive',
+        message: 'You have logged out successfully',
+        timeout: 3000
       })
     },
     async vote () {
       var data
 
       // show notification
-      this.message.voting = this.$notify.info({ title: 'Confirmation', message: 'Please confirm the transaction', duration: 0 })
+      this.message.voting = this.$q.notify({
+        color: 'info',
+        message: 'Please confirm the transaction',
+        timeout: 0
+      })
 
       // if user has ever voted, refresh their last vote
       if (this.voting) {
-        data = { voter: this.state.auth.accountName, proxy: this.state.accountInfo.voter_info.proxy, producers: this.state.accountInfo.voter_info.producers }
+        data = { voter: this.authInfo.auth.accountName, proxy: this.authInfo.accountInfo.voter_info.proxy, producers: this.authInfo.accountInfo.voter_info.producers }
       } else {
         // if user has never voted, allow voting for TITAN proxy
-        data = { voter: this.state.auth.accountName, proxy: 'eostitanvote', producers: [] }
+        data = { voter: this.authInfo.auth.accountName, proxy: 'eostitanvote', producers: [] }
       }
       // create the array of actions for this tx
       var actions = [{
         account: 'eosio',
         name: 'voteproducer',
         authorization: [{
-          actor: this.state.auth.accountName,
-          permission: this.state.auth.permission
+          actor: this.authInfo.auth.accountName,
+          permission: this.authInfo.auth.permission
         }],
         data: data
       }]
       try {
         // wait for user to accept tx on their wallet
         var tx = await this.wallet.eosApi.transact({ actions: actions }, { blocksBehind: 3, expireSeconds: 60 })
-        this.message.voting.close()
+        this.message.voting.dismiss()
 
         // if transaction was successfull, show notification with transaction id link
         if (tx.transaction_id) {
           this.finishedVoting = true
-          this.$notify.success({
-            title: 'You voted sucessfully',
-            message: `<br><button class="el-button el-button--default el-button--small" onclick="window.open('https://eosq.app/tx/${tx.transaction_id}')">View Transaction</div>`,
-            duration: 15000,
+          this.$q.notify({
+            color: 'positive',
+            message: `<p>You voted sucessfully</p><br><button class="q-btn q-btn--default q-btn--small" onclick="window.open('https://eosq.app/tx/${tx.transaction_id}')">View Transaction</div>`,
+            timeout: 15000,
             dangerouslyUseHTMLString: true
           })
         }
       } catch (ex) {
-        this.message.voting.close()
-        if (ex.message) { this.$notify.error({ title: 'Error', message: ex.message, duration: 5000 }) }
+        this.message.voting.dismiss()
+        if (ex.message) { this.$q.notify({ color: 'negative', message: ex.message, timeout: 5000 }) }
       }
     }
   },
   watch: {
-    state (val) {
-      // watching state variable to provide custom notifications to user
-      if (!val.connecting && this.message.connecting && this.walletId !== 'ledger') { this.message.connecting.close() }
-      if (this.message.authenticating) { this.message.authenticating.close() }
-      if (val.connecting) { this.message.connecting = this.$notify.info({ title: 'Connecting', message: `Connecting to ${this.walletId}`, duration: 0 }) } else if (val.authenticating) { this.message.authenticating = this.$notify.info({ title: 'Authenticating', message: `Logging in to ${this.walletId}`, duration: 0 }) } else if (val.authenticationError) { this.$notify.error({ title: 'Authentication Error', message: val.authenticationErrorMessage, duration: 5000 }) } else if (val.connectionError) { this.$notify.error({ title: 'Connection Error', message: val.connectionErrorMessage, duration: 5000 }) } else if (val.accountInfo) {
-        if (this.message.accountInfo) this.message.accountInfo.close()
-        this.message.accountInfo = this.$notify.success({ title: 'Success', message: `Logged in successfully as ${val.accountInfo.account_name}`, duration: 3000 })
-        this.accountsModal = false
-        // once user logs in successfully with scatter, save variable to localstorage to allow auto login
-        localStorage.autoLogin = this.walletId
-      }
+    authInfo: {
+      handler (val) {
+        // watching state variable to provide custom notifications to user
+        if (!val.connecting && this.message.connecting && this.walletId !== 'ledger') {
+          //TODO
+          this.message.connecting.dismiss()
+        }
+        if (this.message.authenticating) { this.message.authenticating.dismiss() }
+        if (val.connecting) {
+          this.message.connecting = this.$q.notify({ color: 'info', message: `Connecting to ${this.walletId}`, timeout: 0, group: 'connecting' })
+        } else if (val.authenticating) {
+          this.message.authenticating = this.$q.notify.info({ message: `Logging in to ${this.walletId}`, timeout: 0 })
+        } else if (val.authenticationError) {
+          this.$q.notify({ color: 'negative', message: val.authenticationErrorMessage, timeout: 5000 })
+        } else if (val.connectionError) {
+          this.$q.notify({ color: 'negative', message: val.connectionErrorMessage, timeout: 5000 })
+        } else if (val.accountInfo) {
+          if (this.message.accountInfo) this.message.accountInfo.dismiss()
+          this.message.accountInfo = this.$q.notify({ color: 'positive', message: `Logged in successfully as ${val.accountInfo.account_name}`, timeout: 3000 })
+          this.accountsModal = false
+          // once user logs in successfully with scatter, save variable to localstorage to allow auto login
+          localStorage.autoLogin = this.walletId
+        }
+      },
+      deep: true
     }
   }
 }
