@@ -283,7 +283,7 @@ export default {
       handler (val) {
         // watching state variable to provide custom notifications to user
         if (!val.connecting && this.message.connecting && this.walletId !== 'ledger') {
-          //TODO
+          // TODO
           this.message.connecting.dismiss()
         }
         if (this.message.authenticating) { this.message.authenticating.dismiss() }
