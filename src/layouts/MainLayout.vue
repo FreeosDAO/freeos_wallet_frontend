@@ -6,7 +6,8 @@
         <q-btn :style="'visibility: ' + (isShowDrawerButton ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
         <div style="display: flex;">
           <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>
-          <WalletLoginDialog v-on:onSigninFinish="onSigninFinish"></WalletLoginDialog>
+<!--          <WalletLoginDialog v-on:onSigninFinish="onSigninFinish"></WalletLoginDialog>-->
+          <q-btn style="justify-self: flex-end;" @click="() => connect('scatter')">Login</q-btn>
         </div>
       </q-toolbar>
     </q-header>
@@ -80,7 +81,9 @@
 <script>
 import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
-import WalletLoginDialog from 'components/account-management/WalletLoginDialog'
+// import WalletLoginDialog from 'components/account-management/WalletLoginDialog'
+import { mapActions, mapGetters } from 'vuex'
+
 const menuList = [
   {
     icon: 'monetization_on',
@@ -116,7 +119,6 @@ const menuList = [
 ]
 export default {
   components: {
-    WalletLoginDialog
   },
   data () {
     return {
@@ -125,6 +127,9 @@ export default {
       selectedItemLabel: null,
       menuList
     }
+  },
+  computed: {
+    ...mapGetters('account', ['isAuthenticated', 'connecting'])
   },
   methods: {
     onSigninFinish (event) {
@@ -180,6 +185,17 @@ export default {
     },
     onTomTest () {
       this.TOMconnect('reguser', 'freeos333333')
+    },
+    ...mapActions('account', ['connect'])
+  },
+  watch: {
+    isAuthenticated: {
+      immediate: true,
+      handler: function (val) {
+        if (val && this.$route.query.returnUrl) {
+          this.$router.push({ path: this.$route.query.returnUrl })
+        }
+      }
     }
   }
 }
