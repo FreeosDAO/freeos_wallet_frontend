@@ -20,6 +20,7 @@ export default async ({ Vue, store }) => {
   const transit = { accessContext }
   Vue.prototype.$transit = transit
   store.$transit = transit
+  console.log(transit)
   if (localStorage.walletId) {
     store.dispatch('account/connect', localStorage.walletId)
   }
