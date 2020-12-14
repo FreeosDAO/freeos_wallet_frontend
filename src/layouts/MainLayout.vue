@@ -3,11 +3,13 @@
 
     <q-header reveal elevated class="bg-primary" height-hint="98">
       <q-toolbar style="justify-content: space-between;">
-        <q-btn :style="'visibility: ' + (isShowDrawerButton ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
-        <div style="display: flex;">
-          <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>
+        <q-btn :style="'visibility: ' + (isAuthenticated ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
+        <div style="display: flex; align-items: baseline">
+          <div v-if="isAuthenticated" style="margin-right: 1rem;">{{accountInfo.account_name}}</div>
+<!--          <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>-->
 <!--          <WalletLoginDialog v-on:onSigninFinish="onSigninFinish"></WalletLoginDialog>-->
-          <q-btn style="justify-self: flex-end;" @click="() => connect('scatter')">Login</q-btn>
+          <q-btn v-if="!isAuthenticated" style="justify-self: flex-end;" @click="() => connect('scatter')">Login</q-btn>
+          <q-btn v-if="isAuthenticated" style="justify-self: flex-end;" @click="() => logout()">Logout</q-btn>
         </div>
       </q-toolbar>
     </q-header>
@@ -42,22 +44,22 @@
         <div class="col-xs-12 col-md-2 q-mb-md">
           <img width="110" src="~assets/freeos_icon.png">
         </div>
-        <div v-if="isShowDrawerButton" class="col-xs-12 col-md-5 row text-left">
+        <div v-if="isAuthenticated" class="col-xs-12 col-md-5 row text-left">
           <div class="col-xs-3"></div>
           <div class="col-xs-8">
             <div class="row">
-              <div class="col-5">Liquid XPR: </div>
-              <div class="col-5 text-primary text-weight-bold">0.0214 XPR</div>
+              <div class="col-5">Liquid balance: </div>
+              <div class="col-5 text-primary text-weight-bold">{{accountInfo.core_liquid_balance}}</div>
             </div>
             <q-separator class="q-mt-sm q-mb-sm" />
             <div class="row">
-              <div class="col-5">Staked XPR: </div>
-              <div class="col-5 text-primary text-weight-bold">1,111 XPR</div>
+              <div class="col-5">Voter Staked: </div>
+              <div class="col-5 text-primary text-weight-bold">{{accountInfo.voter_info.staked}}</div>
             </div>
             <q-separator class="q-mt-sm q-mb-sm" />
             <div class="row text-green text-weight-bold">
               <div class="col-5">Total FREEOS: </div>
-              <div class="col-5">150 FREEOS</div>
+              <div class="col-5"></div>
             </div>
           </div>
         </div>
@@ -129,7 +131,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('account', ['isAuthenticated', 'connecting'])
+    ...mapGetters('account', ['isAuthenticated', 'connecting', 'accountInfo'])
   },
   methods: {
     onSigninFinish (event) {
@@ -186,7 +188,7 @@ export default {
     onTomTest () {
       this.TOMconnect('reguser', 'freeos333333')
     },
-    ...mapActions('account', ['connect'])
+    ...mapActions('account', ['connect', 'logout'])
   },
   watch: {
     isAuthenticated: {

@@ -1,3 +1,5 @@
+import notifyAlert from 'src/services/notify-alert'
+
 /**
  * Connect to a wallet
  * Don't use arrow function here to have access to Vue prototype (this.$...)
@@ -11,15 +13,19 @@ export const connect = async function ({ commit }, walletId) {
   const wallet = this.$transit.accessContext.initWallet(this.$transit.accessContext.getWalletProviders().find(r => r.id === walletId))
   wallet.subscribe(walletState => {
     let message
+    let messageStatus = 1
     if (walletState.connecting) {
       message = `Connecting to ${walletId}`
     } else if (walletState.authenticating) {
       message = `Logging in to ${walletId}`
     } else if (walletState.authenticationError) {
       message = walletState.authenticationErrorMessage
+      messageStatus = 0
     } else if (walletState.connectionError) {
       message = walletState.connectionErrorMessage
+      messageStatus = 0
     } else if (walletState.accountInfo) {
+      message = 'login successfully'
       commit('setAccount', {
         account: walletState.accountInfo,
         walletId
@@ -28,6 +34,7 @@ export const connect = async function ({ commit }, walletId) {
     if (message) {
       // You can add some snackbar message here
       // console.log(message)
+      notifyAlert(messageStatus, message)
     }
   })
   await wallet.connect()
@@ -39,7 +46,6 @@ export const connect = async function ({ commit }, walletId) {
 export const logout = async function ({ commit }) {
   await this.$transit.wallet.terminate()
   commit('clearAccount', null)
-  console.log(this.$route.fullPath)
   // this.$router.push('/')
 }
 
