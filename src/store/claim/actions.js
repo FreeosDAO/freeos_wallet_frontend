@@ -5,8 +5,7 @@ export const actionClaim = async function ({ state }) {
   try {
     const result = await this.$transit.eosApi.transact({
       actions: [{
-        // account: process.env.AIRCLAIM_CONTRACT_NAME,
-        account: 'freeos333333',
+        account: process.env.AIRCLAIM_CONTRACT_NAME,
         name: 'claim',
         authorization: [{
           actor: this.$transit.wallet.auth.accountName,
