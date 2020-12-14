@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import account from './account'
 import claim from './claim'
+import reguser from './reguser'
 
 Vue.use(Vuex)
 
@@ -19,7 +20,8 @@ export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       account,
-      claim
+      claim,
+      reguser
     },
 
     // enable strict mode (adds overhead!)

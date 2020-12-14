@@ -188,12 +188,17 @@ export default {
     onTomTest () {
       this.TOMconnect('reguser', 'freeos333333')
     },
-    ...mapActions('account', ['connect', 'logout'])
+    ...mapActions('account', ['connect', 'logout']),
+    ...mapActions('reguser', ['actionReguser'])
   },
   watch: {
     isAuthenticated: {
       immediate: true,
       handler: function (val) {
+        console.log(val)
+        if (val) {
+          this.actionReguser()
+        }
         if (val && this.$route.query.returnUrl) {
           this.$router.push({ path: this.$route.query.returnUrl })
         }
