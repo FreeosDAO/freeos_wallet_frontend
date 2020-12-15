@@ -4,6 +4,9 @@ import Vuex from 'vuex'
 import account from './account'
 import claim from './claim'
 import reguser from './reguser'
+import stake from './stake'
+import unstake from './unstake'
+import transfer from './transfer'
 
 Vue.use(Vuex)
 
@@ -21,7 +24,10 @@ export default function (/* { ssrContext } */) {
     modules: {
       account,
       claim,
-      reguser
+      stake,
+      unstake,
+      reguser,
+      transfer
     },
 
     // enable strict mode (adds overhead!)

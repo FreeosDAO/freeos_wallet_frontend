@@ -54,7 +54,7 @@
             <q-separator class="q-mt-sm q-mb-sm" />
             <div class="row">
               <div class="col-5">Voter Staked: </div>
-              <div class="col-5 text-primary text-weight-bold">{{accountInfo.voter_info.staked}}</div>
+              <div class="col-5 text-primary text-weight-bold"></div>
             </div>
             <q-separator class="q-mt-sm q-mb-sm" />
             <div class="row text-green text-weight-bold">
@@ -104,20 +104,20 @@ const menuList = [
     label: 'Stake',
     separator: true,
     route: '/stake'
-  },
+  }
   // {
   //   icon: 'account_balance_wallet',
   //   label: 'Buy',
   //   separator: true,
   //   route: '/buy'
   // },
-  {
-    icon: 'info',
-    iconColor: 'primary',
-    label: 'Info',
-    separator: false,
-    route: '/account'
-  }
+  // {
+  //   icon: 'info',
+  //   iconColor: 'primary',
+  //   label: 'Info',
+  //   separator: false,
+  //   route: '/account'
+  // }
 ]
 export default {
   components: {
@@ -196,9 +196,9 @@ export default {
       immediate: true,
       handler: function (val) {
         console.log(val)
-        if (val) {
-          this.actionReguser()
-        }
+        // if (val) {
+        //   this.actionReguser()
+        // }
         if (val && this.$route.query.returnUrl) {
           this.$router.push({ path: this.$route.query.returnUrl })
         }

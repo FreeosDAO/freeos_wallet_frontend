@@ -19,7 +19,7 @@
               />
             </div>
             <div class="q-ma-md q-mt-lg">
-              <q-btn color="primary" @click="onStake" no-caps label="Stake" />
+              <q-btn color="primary" @click="() => actionStake()" no-caps label="Stake" />
             </div>
           </q-card-section>
         </q-card>
@@ -39,7 +39,7 @@
               />
             </div>
             <div class="q-ma-md q-mt-lg">
-              <q-btn color="primary" no-caps label="Unstake" @click="onUnStake" />
+              <q-btn color="primary" no-caps label="Unstake" @click="() => actionUnstake()" />
             </div>
           </q-card-section>
         </q-card>
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import ApiCall from 'src/services/api-call'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'StakeAndUnstake',
@@ -120,14 +120,8 @@ export default {
     }
   },
   methods: {
-    onStake () {
-      const requiredStake = ApiCall.getUserStakeRequirement('yvetecoleman')
-      ApiCall.actionStake('yvetecoleman', requiredStake)
-    },
-    onUnStake () {
-      ApiCall.actionUnstake('yvetecoleman')
-      // this.unstakeAmount && (this.isShowUnstakeDialog = true)
-    }
+    ...mapActions('stake', ['actionStake']),
+    ...mapActions('unstake', ['actionUnstake'])
   }
 }
 </script>

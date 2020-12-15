@@ -172,6 +172,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   name: 'Transfer',
   data () {
@@ -187,6 +188,9 @@ export default {
       isShowApprovedDialog: false,
       isShowFailedDialog: false
     }
+  },
+  methods: {
+    ...mapActions('transfer', ['sendTokens'])
   }
 }
 </script>
