@@ -1,15 +1,9 @@
 import notifyAlert from 'src/services/notify-alert'
-import { Api, JsonRpc, RpcError } from 'eosjs'
-import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
+import { RpcError } from 'eosjs'
 
 export const actionReguser = async function ({ state }) {
   try {
-    // const privateKey = 'this.key' // 5JzyPkVLFvSHYGyyndzvMwAopFDSz8JqQYqaiTjkrcoU2fTRKfM
-    const privateKey = '5JzyPkVLFvSHYGyyndzvMwAopFDSz8JqQYqaiTjkrcoU2fTRKfM' // this could be passed as an argument perhaps
-    const rpc = new JsonRpc('https://kylin-dsp-1.liquidapps.io/')
-    const signatureProvider = new JsSignatureProvider([privateKey])
-    const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
-    const resultWithConfig = await api.transact({
+    const result = await this.$transit.eosApi.transact({
       actions: [{
         account: 'freeos333333', // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
         name: 'reguser', // name of the action to call
@@ -27,13 +21,13 @@ export const actionReguser = async function ({ state }) {
       blocksBehind: 3,
       expireSeconds: 30
     })
-    if (resultWithConfig.processed.receipt.status === 'executed') {
-      notifyAlert('success', resultWithConfig.processed.action_traces[0].console) // Kenneth: Notify message in green
+    if (result.processed.receipt.status === 'executed') {
+      notifyAlert('success', result.processed.action_traces[0].console) // Kenneth: Notify message in green
     } else {
       notifyAlert('err', 'The action could not be completed. Please try later')
       // Kenneth: Notify error in red
     }
-    return resultWithConfig
+    return result
   } catch (e) {
     // console.log('Other error: ', e.message)
     // Kenneth: All of the following log messages should be replaced with Notify messages in red

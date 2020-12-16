@@ -1,16 +1,9 @@
 import notifyAlert from 'src/services/notify-alert'
-import { Api, JsonRpc, RpcError } from 'eosjs'
-import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
+import { JsonRpc, RpcError } from 'eosjs'
 
 export const actionStake = async function ({ state }) {
   try {
-    // const privateKey = 'this.key'
-    const privateKey = '5JzyPkVLFvSHYGyyndzvMwAopFDSz8JqQYqaiTjkrcoU2fTRKfM' // this could be passed as an argument perhaps
     const rpc = new JsonRpc('https://kylin-dsp-1.liquidapps.io/')
-    const signatureProvider = new JsSignatureProvider([privateKey])
-    const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
-
-    // Get the user's stake requirement from their user record
     const userRecord = await rpc.get_table_rows({
       json: true, // Get the response as json
       code: 'freeos333333', // Contract that we target
@@ -19,13 +12,13 @@ export const actionStake = async function ({ state }) {
       limit: 1 // Maximum number of rows that we want to get
     })
 
-    const resultWithConfig = await api.transact({
+    const result = await this.$transit.eosApi.transact({
       actions: [{
-        account: 'eosio.token', // the name of the EOS currency administration contract
+        account: process.env.TOKEN_SMARTCONTRACT, // the name of the EOS currency administration contract
         name: 'transfer', // name of the action to call
         authorization: [{
           actor: this.$transit.wallet.auth.accountName, // the stake action is called on behalf of the user
-          permission: 'active' // name of permission, e.g. this and the line above are the equivalent of  -p yvetecoleman@active
+          permission: this.$transit.wallet.auth.permission // name of permission, e.g. this and the line above are the equivalent of  -p yvetecoleman@active
         }],
         data: {
           // Kenneth: only the following parameters required for transfer action
@@ -39,12 +32,12 @@ export const actionStake = async function ({ state }) {
       blocksBehind: 3,
       expireSeconds: 30
     })
-    if (resultWithConfig.processed.receipt.status === 'executed') {
-      notifyAlert('success', resultWithConfig.processed.action_traces[0].console) // Kenneth: Notify message in green
+    if (result.processed.receipt.status === 'executed') {
+      notifyAlert('success', result.processed.action_traces[0].console) // Kenneth: Notify message in green
     } else {
       notifyAlert('err', 'The action could not be completed. Please try later') // Kenneth: Notify error in red
     }
-    return resultWithConfig
+    return result
   } catch (e) {
     // notifyAlert('err', 'Other error: ', e.message)
     // Kenneth: All of the following log messages should be replaced with Notify messages in red
