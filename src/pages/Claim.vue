@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import ApiCall from 'src/services/api-call'
+import { mapActions } from 'vuex'
 export default {
   name: 'Claim',
   data () {
@@ -36,8 +36,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions('claim', ['actionClaim']),
     async onClaim () {
-      ApiCall.actionClaim('yvetecoleman')
+      const result = await this.actionClaim()
+      console.log(result) // Display the result/error of the
     }
   }
 }

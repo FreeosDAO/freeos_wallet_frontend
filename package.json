@@ -14,6 +14,13 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
     "core-js": "^3.6.5",
+    "dotenv": "^8.2.0",
+    "eos-transit": "^3.0.1",
+    "eos-transit-ledger-provider": "^3.0.1",
+    "eos-transit-lynx-provider": "^3.0.2",
+    "eos-transit-meetone-provider": "^3.0.6",
+    "eos-transit-scatter-provider": "^3.0.1",
+    "eos-transit-tokenpocket-provider": "^3.0.1",
     "eosjs": "^21.0.3",
     "quasar": "^1.0.0"
   },

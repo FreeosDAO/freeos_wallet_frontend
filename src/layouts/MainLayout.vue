@@ -3,10 +3,13 @@
 
     <q-header reveal elevated class="bg-primary" height-hint="98">
       <q-toolbar style="justify-content: space-between;">
-        <q-btn :style="'visibility: ' + (isShowDrawerButton ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
-        <div style="display: flex;">
-          <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>
-          <LoginAndRegisterDialog v-on:onSigninFinish="onSigninFinish"></LoginAndRegisterDialog>
+        <q-btn :style="'visibility: ' + (isAuthenticated ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
+        <div style="display: flex; align-items: baseline">
+          <div v-if="isAuthenticated" style="margin-right: 1rem;">{{accountInfo.account_name}}</div>
+<!--          <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>-->
+<!--          <WalletLoginDialog v-on:onSigninFinish="onSigninFinish"></WalletLoginDialog>-->
+          <q-btn v-if="!isAuthenticated" style="justify-self: flex-end;" @click="() => connect('scatter')">Login</q-btn>
+          <q-btn v-if="isAuthenticated" style="justify-self: flex-end;" @click="() => logout()">Logout</q-btn>
         </div>
       </q-toolbar>
     </q-header>
@@ -41,22 +44,22 @@
         <div class="col-xs-12 col-md-2 q-mb-md">
           <img width="110" src="~assets/freeos_icon.png">
         </div>
-        <div v-if="isShowDrawerButton" class="col-xs-12 col-md-5 row text-left">
+        <div v-if="isAuthenticated" class="col-xs-12 col-md-5 row text-left">
           <div class="col-xs-3"></div>
           <div class="col-xs-8">
             <div class="row">
-              <div class="col-5">Liquid XPR: </div>
-              <div class="col-5 text-primary text-weight-bold">0.0214 XPR</div>
+              <div class="col-5">Liquid balance: </div>
+              <div class="col-5 text-primary text-weight-bold">{{accountInfo.core_liquid_balance}}</div>
             </div>
             <q-separator class="q-mt-sm q-mb-sm" />
             <div class="row">
-              <div class="col-5">Staked XPR: </div>
-              <div class="col-5 text-primary text-weight-bold">1,111 XPR</div>
+              <div class="col-5">Voter Staked: </div>
+              <div class="col-5 text-primary text-weight-bold"></div>
             </div>
             <q-separator class="q-mt-sm q-mb-sm" />
             <div class="row text-green text-weight-bold">
               <div class="col-5">Total FREEOS: </div>
-              <div class="col-5">150 FREEOS</div>
+              <div class="col-5"></div>
             </div>
           </div>
         </div>
@@ -78,9 +81,11 @@
 </template>
 
 <script>
-import LoginAndRegisterDialog from '../components/account-management/LoginAndRegisterDialog'
 import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
+// import WalletLoginDialog from 'components/account-management/WalletLoginDialog'
+import { mapActions, mapGetters } from 'vuex'
+
 const menuList = [
   {
     icon: 'monetization_on',
@@ -99,24 +104,23 @@ const menuList = [
     label: 'Stake',
     separator: true,
     route: '/stake'
-  },
+  }
   // {
   //   icon: 'account_balance_wallet',
   //   label: 'Buy',
   //   separator: true,
   //   route: '/buy'
   // },
-  {
-    icon: 'info',
-    iconColor: 'primary',
-    label: 'Info',
-    separator: false,
-    route: '/account'
-  }
+  // {
+  //   icon: 'info',
+  //   iconColor: 'primary',
+  //   label: 'Info',
+  //   separator: false,
+  //   route: '/account'
+  // }
 ]
 export default {
   components: {
-    LoginAndRegisterDialog
   },
   data () {
     return {
@@ -125,6 +129,9 @@ export default {
       selectedItemLabel: null,
       menuList
     }
+  },
+  computed: {
+    ...mapGetters('account', ['isAuthenticated', 'connecting', 'accountInfo'])
   },
   methods: {
     onSigninFinish (event) {
@@ -180,6 +187,22 @@ export default {
     },
     onTomTest () {
       this.TOMconnect('reguser', 'freeos333333')
+    },
+    ...mapActions('account', ['connect', 'logout']),
+    ...mapActions('reguser', ['actionReguser'])
+  },
+  watch: {
+    isAuthenticated: {
+      immediate: true,
+      handler: function (val) {
+        console.log(val)
+        // if (val) {
+        //   this.actionReguser()
+        // }
+        if (val && this.$route.query.returnUrl) {
+          this.$router.push({ path: this.$route.query.returnUrl })
+        }
+      }
     }
   }
 }

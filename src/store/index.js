@@ -1,7 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-// import example from './module-example'
+import account from './account'
+import claim from './claim'
+import reguser from './reguser'
+import stake from './stake'
+import unstake from './unstake'
+import transfer from './transfer'
 
 Vue.use(Vuex)
 
@@ -17,7 +22,12 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      // example
+      account,
+      claim,
+      stake,
+      unstake,
+      reguser,
+      transfer
     },
 
     // enable strict mode (adds overhead!)
