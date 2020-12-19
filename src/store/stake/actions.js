@@ -14,8 +14,8 @@ export const actionStake = async function ({ state }) {
 
     const result = await this.$transit.eosApi.transact({
       actions: [{
-        account: process.env.TOKEN_SMARTCONTRACT, // the name of the EOS currency administration contract
-        name: 'transfer', // name of the action to call
+        account: 'freeos333333', // the name of the EOS currency administration contract
+        name: 'stake', // name of the action to call
         authorization: [{
           actor: this.$transit.wallet.auth.accountName, // the stake action is called on behalf of the user
           permission: this.$transit.wallet.auth.permission // name of permission, e.g. this and the line above are the equivalent of  -p yvetecoleman@active

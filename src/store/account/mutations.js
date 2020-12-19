@@ -11,6 +11,10 @@ export const setAccount = function (state, { account, walletId }) {
   }
 }
 
+export const setClaimInfo = function (state, claimInfo) {
+  state.claimInfo = claimInfo
+}
+
 export const clearAccount = function (state) {
   localStorage.removeItem('walletId')
   state.account = null
