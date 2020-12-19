@@ -29,7 +29,6 @@ export const actionClaim = async function ({ state }) {
   } catch (e) {
     // notifyAlert('err', 'Other error: ', e.message)
     // Kenneth: All of the following log messages should be replaced with Notify messages in red
-
     if (e.message === 'UnAuthorized') {
       notifyAlert('err', 'Please check that your wallet contains the correct keys for the account you are trying to register')
     } else if (e.message.startsWith('assertion failure with message: ')) {

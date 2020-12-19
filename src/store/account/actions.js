@@ -26,11 +26,13 @@ export const connect = async function ({ commit }, walletId) {
       message = walletState.connectionErrorMessage
       messageStatus = 0
     } else if (walletState.accountInfo) {
-      message = 'login successfully'
-      commit('setAccount', {
-        account: walletState.accountInfo,
-        walletId
-      })
+      if (!this.$transit.wallet) {
+        message = 'login successfully'
+        commit('setAccount', {
+          account: walletState.accountInfo,
+          walletId
+        })
+      }
     }
     if (message) {
       // You can add some snackbar message here
@@ -48,6 +50,50 @@ export const logout = async function ({ commit }) {
   await this.$transit.wallet.terminate()
   commit('clearAccount', null)
   // this.$router.push('/')
+}
+
+export const getClaimInfo = async function ({ commit }, accountName) {
+  console.log(accountName)
+  console.log('yvetecoleman')
+  const { JsonRpc } = require('eosjs')
+  const rpc = new JsonRpc('https://kylin-dsp-1.liquidapps.io:443', { fetch }) // endpoint
+  const resp1 = await rpc.get_table_rows({
+    json: true,
+    code: 'eosio.token', // account containing smart contract
+    scope: 'yvetecoleman', // the subset of the table to query
+    table: 'accounts', // the name of the table
+    limit: 10 // limit on number of rows returned
+  })
+  const resp2 = await rpc.get_table_rows({
+    json: true,
+    code: 'freeos333333',
+    scope: accountName,
+    table: 'users',
+    limit: 1
+  })
+  const resp3 = await rpc.get_table_rows({
+    json: true,
+    code: 'freeos333333',
+    scope: accountName,
+    table: 'accounts',
+    limit: 10
+  })
+  const resp4 = await rpc.get_table_rows({
+    json: true,
+    code: 'freeosconfig',
+    scope: 'freeosconfig',
+    table: 'weeks',
+    limit: 26
+  })
+  const claimInfo = {
+    eosInAccount: resp1.rows[0],
+    eosStaked: resp2.rows[0],
+    freeosInAccount: resp3.rows[0],
+    claimCalendar: resp4.rows[0],
+    freeosHoldingRequire: resp4.rows[0]
+  }
+  console.log(claimInfo)
+  commit('setClaimInfo', claimInfo)
 }
 
 export const setpath = function ({ commit }, pathe) {

@@ -1,5 +1,22 @@
 export default () => ({
   account: null,
   connecting: false,
-  path: '/claim'
+  path: '/claim',
+  claimInfo: {
+    eosInAccount: {
+      balance: ''
+    },
+    eosStaked: {
+      stake: ''
+    },
+    freeosInAccount: {
+      balance: ''
+    },
+    claimCalendar: {
+      end_date: ''
+    },
+    freeosHoldingRequire: {
+      tokens_required: 0
+    }
+  }
 })

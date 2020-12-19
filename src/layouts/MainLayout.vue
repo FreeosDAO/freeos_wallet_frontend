@@ -4,7 +4,7 @@
     <q-header reveal elevated class="bg-primary" height-hint="98">
       <q-toolbar style="justify-content: space-between;">
         <q-btn :style="'visibility: ' + (isAuthenticated ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
-        <div style="display: flex; align-items: baseline">
+        <div style="display: flex; align-items: center;">
           <div v-if="isAuthenticated" style="margin-right: 1rem;">{{accountInfo.account_name}}</div>
 <!--          <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>-->
 <!--          <WalletLoginDialog v-on:onSigninFinish="onSigninFinish"></WalletLoginDialog>-->
@@ -44,22 +44,22 @@
         <div class="col-xs-12 col-md-2 q-mb-md">
           <img width="110" src="~assets/freeos_icon.png">
         </div>
-        <div v-if="isAuthenticated" class="col-xs-12 col-md-5 row text-left">
+        <div v-if="claimInfo" class="col-xs-12 col-md-5 row text-left">
           <div class="col-xs-3"></div>
           <div class="col-xs-8">
             <div class="row">
-              <div class="col-5">Liquid balance: </div>
-              <div class="col-5 text-primary text-weight-bold">{{accountInfo.core_liquid_balance}}</div>
+              <div class="col-5">Liquid: </div>
+              <div class="col-5 text-primary text-weight-bold">{{claimInfo.eosInAccount.balance}}</div>
             </div>
             <q-separator class="q-mt-sm q-mb-sm" />
             <div class="row">
-              <div class="col-5">Voter Staked: </div>
-              <div class="col-5 text-primary text-weight-bold"></div>
+              <div class="col-5">Staked: </div>
+              <div class="col-5 text-primary text-weight-bold">{{claimInfo.eosStaked.stake}}</div>
             </div>
             <q-separator class="q-mt-sm q-mb-sm" />
             <div class="row text-green text-weight-bold">
               <div class="col-5">Total FREEOS: </div>
-              <div class="col-5"></div>
+              <div class="col-5">{{claimInfo.freeosInAccount.balance}}</div>
             </div>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('account', ['isAuthenticated', 'connecting', 'accountInfo'])
+    ...mapGetters('account', ['isAuthenticated', 'connecting', 'accountInfo', 'claimInfo'])
   },
   methods: {
     onSigninFinish (event) {
@@ -188,17 +188,16 @@ export default {
     onTomTest () {
       this.TOMconnect('reguser', 'freeos333333')
     },
-    ...mapActions('account', ['connect', 'logout']),
-    ...mapActions('reguser', ['actionReguser'])
+    ...mapActions('account', ['connect', 'logout', 'getClaimInfo'])
   },
   watch: {
     isAuthenticated: {
       immediate: true,
       handler: function (val) {
         console.log(val)
-        // if (val) {
-        //   this.actionReguser()
-        // }
+        if (val && this.accountInfo) {
+          this.getClaimInfo(this.accountInfo.account_name)
+        }
         if (val && this.$route.query.returnUrl) {
           this.$router.push({ path: this.$route.query.returnUrl })
         }

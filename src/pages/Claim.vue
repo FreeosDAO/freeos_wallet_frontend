@@ -2,13 +2,13 @@
   <div>
     <div class="text-center">
       <div class="q-ma-md q-mt-lg">
-        <q-btn color="primary" @click="onClaim" no-caps label="Claim FreeOS" />
+        <q-btn color="primary" @click="() => actionClaim()" no-caps label="Claim FreeOS" />
       </div>
-      <div class="q-ma-md">
-        Next claim will be available in 3 days
+      <div class="q-ma-md" v-if="claimInfo">
+        Next claim will be available in {{getDateDiff()}} days
       </div>
-      <div class="q-ma-md q-mt-lg">
-        To be able to claim you need to have 5 EOS staked on your account.<br>
+      <div class="q-ma-md q-mt-lg" v-if="claimInfo">
+        To be able to claim you need to have {{claimInfo.freeosHoldingRequire.tokens_required}} EOS staked on your account.<br>
         More Information staking/unstaking you can find <span @click="$router.push('/stake')" class="text-primary" style="text-decoration: underline; cursor: pointer;">here</span>
       </div>
       <div class="q-ma-md q-mt-xl">
@@ -27,7 +27,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
   name: 'Claim',
   data () {
@@ -35,11 +36,15 @@ export default {
       isNotification: true
     }
   },
+  computed: {
+    ...mapGetters('account', ['claimInfo'])
+  },
   methods: {
     ...mapActions('claim', ['actionClaim']),
-    async onClaim () {
-      const result = await this.actionClaim()
-      console.log(result) // Display the result/error of the
+    getDateDiff () {
+      const endDate = new Date(this.claimInfo.claimCalendar.end_date)
+      const startDate = new Date()
+      return Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24))
     }
   }
 }
