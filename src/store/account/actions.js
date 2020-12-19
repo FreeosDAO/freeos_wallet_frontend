@@ -53,35 +53,33 @@ export const logout = async function ({ commit }) {
 }
 
 export const getClaimInfo = async function ({ commit }, accountName) {
-  console.log(accountName)
-  console.log('yvetecoleman')
   const { JsonRpc } = require('eosjs')
-  const rpc = new JsonRpc('https://kylin-dsp-1.liquidapps.io:443', { fetch }) // endpoint
+  const rpc = new JsonRpc('https://' + process.env.NETWORK_HOST + ':' + process.env.NETWORK_PORT, { fetch }) // endpoint
   const resp1 = await rpc.get_table_rows({
     json: true,
     code: 'eosio.token', // account containing smart contract
-    scope: 'yvetecoleman', // the subset of the table to query
+    scope: accountName, // the subset of the table to query
     table: 'accounts', // the name of the table
     limit: 10 // limit on number of rows returned
   })
   const resp2 = await rpc.get_table_rows({
     json: true,
-    code: 'freeos333333',
+    code: process.env.AIRCLAIM_CONTRACT,
     scope: accountName,
     table: 'users',
     limit: 1
   })
   const resp3 = await rpc.get_table_rows({
     json: true,
-    code: 'freeos333333',
+    code: process.env.AIRCLAIM_CONTRACT,
     scope: accountName,
     table: 'accounts',
     limit: 10
   })
   const resp4 = await rpc.get_table_rows({
     json: true,
-    code: 'freeosconfig',
-    scope: 'freeosconfig',
+    code: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
+    scope: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
     table: 'weeks',
     limit: 26
   })
