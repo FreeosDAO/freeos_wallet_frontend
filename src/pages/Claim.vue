@@ -42,7 +42,7 @@ export default {
   methods: {
     ...mapActions('claim', ['actionClaim']),
     getDateDiff () {
-      const endDate = new Date(this.claimInfo.claimCalendar.end_date)
+      const endDate = new Date(this.claimInfo.claimCalendar.end * 1000)
       const startDate = new Date()
       return Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24))
     }

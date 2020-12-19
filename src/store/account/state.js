@@ -17,6 +17,10 @@ export default () => ({
     },
     freeosHoldingRequire: {
       tokens_required: 0
-    }
+    },
+    respMasterSwitch: '',
+    respFreeosRecord: '',
+    respStakeRequirement: '',
+    respAirKey: ''
   }
 })
