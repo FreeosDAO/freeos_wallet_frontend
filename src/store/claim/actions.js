@@ -4,6 +4,7 @@ import { RpcError } from 'eosjs'
 export const actionClaim = async function ({ state }) {
   let result
   try {
+    console.log('testetssetset')
     result = await this.$transit.eosApi.transact({
       actions: [{
         account: 'freeos333333', // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
@@ -29,6 +30,7 @@ export const actionClaim = async function ({ state }) {
     }
     return result
   } catch (e) {
+    console.log(e)
     // notifyAlert('err', 'Other error: ', e.message)
     // Kenneth: All of the following log messages should be replaced with Notify messages in red
     if (e.message === 'UnAuthorized') {
