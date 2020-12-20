@@ -13,20 +13,28 @@
             claimInfo.respFreeosRecord && claimInfo.respFreeosRecord.stake_requirement ||
             claimInfo.respStakeRequirement.default_stake
           }}
-        </b> staked on your account.<br>
+        </b> staked on your account.
+      </div>
+      <div class="q-mt-lg q-mb-lg" v-if="claimInfo.freeosInAccount && (claimInfo.freeosInAccount.balance < claimInfo.freeosHoldingRequire.tokens_required)">
+        To be able to Claim, you need a total of <b>{{claimInfo.freeosHoldingRequire.tokens_required}} FREEOS</b> in your account. <br>
+        Please <span @click="$router.push('/transfer')" class="text-primary" style="text-decoration: underline; cursor: pointer;">transfer</span> an additional
+        <b>{{claimInfo.freeosHoldingRequire.tokens_required - parseFloat(claimInfo.freeosInAccount.balance)}} FREEOS</b>
+        in order to Claim.
+      </div>
+      <div v-if="claimInfo&&isDisplayingStakedMessage()">
         More Information staking/unstaking you can find <span @click="$router.push('/stake')" class="text-primary" style="text-decoration: underline; cursor: pointer;">here</span>
       </div>
-      <div class="q-ma-md q-mt-xl">
-        You can get notified about upcoming claim via email or pop-notification on your mobile device
-      </div>
-      <div class="q-ma-md">
-        <span class="q-mr-lg">Notification</span>
-        <q-toggle
-          :label="isNotification ? 'ON' : 'OFF'"
-          color="green"
-          v-model="isNotification"
-        />
-      </div>
+<!--      <div class="q-ma-md q-mt-xl">-->
+<!--        You can get notified about upcoming claim via email or pop-notification on your mobile device-->
+<!--      </div>-->
+<!--      <div class="q-ma-md">-->
+<!--        <span class="q-mr-lg">Notification</span>-->
+<!--        <q-toggle-->
+<!--          :label="isNotification ? 'ON' : 'OFF'"-->
+<!--          color="green"-->
+<!--          v-model="isNotification"-->
+<!--        />-->
+<!--      </div>-->
     </div>
   </div>
 </template>
