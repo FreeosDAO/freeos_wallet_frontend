@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <div class="text-center">
+  <div class="text-center">
+    <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) !== 1">
+      <b>Freeos system is not currently operational. Please check back later.</b>
+    </div>
+    <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) === 1">
       <div class="q-ma-md q-mt-lg">
         <q-btn :disable="isDisableClaim() || isDisplayingStakedMessage() || isDisplayingHoldingRequirement() || claimInfo.respIsUserAlreadyClaimed" color="primary" @click="() => actionClaim()" no-caps label="Claim FreeOS" />
       </div>
