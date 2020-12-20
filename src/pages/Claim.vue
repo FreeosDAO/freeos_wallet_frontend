@@ -2,9 +2,9 @@
   <div>
     <div class="text-center">
       <div class="q-ma-md q-mt-lg">
-        <q-btn :disable="isDisableClaim()" color="primary" @click="() => actionClaim()" no-caps label="Claim FreeOS" />
+        <q-btn :disable="isDisableClaim() || isDisplayingStakedMessage() || isDisplayingHoldingRequirement() || claimInfo.respIsUserAlreadyClaimed" color="primary" @click="() => actionClaim()" no-caps label="Claim FreeOS" />
       </div>
-      <div class="q-ma-md" v-if="claimInfo">
+      <div class="q-ma-md" v-if="claimInfo&&claimInfo.respIsUserAlreadyClaimed">
         Next claim will be available in {{getDateDiff()}} days
       </div>
       <div class="q-ma-md q-mt-lg" v-if="claimInfo&&isDisplayingStakedMessage()">
@@ -15,7 +15,7 @@
           }}
         </b> staked on your account.
       </div>
-      <div class="q-mt-lg q-mb-lg" v-if="claimInfo.freeosInAccount && (claimInfo.freeosInAccount.balance < claimInfo.freeosHoldingRequire.tokens_required)">
+      <div class="q-mt-lg q-mb-lg" v-if="isDisplayingHoldingRequirement()">
         To be able to Claim, you need a total of <b>{{claimInfo.freeosHoldingRequire.tokens_required}} FREEOS</b> in your account. <br>
         Please <span @click="$router.push('/transfer')" class="text-primary" style="text-decoration: underline; cursor: pointer;">transfer</span> an additional
         <b>{{claimInfo.freeosHoldingRequire.tokens_required - parseFloat(claimInfo.freeosInAccount.balance)}} FREEOS</b>
@@ -99,6 +99,9 @@ export default {
         !this.claimInfo.respFreeosRecord ||
         (this.claimInfo.respFreeosRecord.stake !== this.claimInfo.respFreeosRecord.stake_requirement)
       )
+    },
+    isDisplayingHoldingRequirement () {
+      return this.claimInfo.freeosInAccount && (this.claimInfo.freeosInAccount.balance < this.claimInfo.freeosHoldingRequire.tokens_required)
     }
   }
 }
