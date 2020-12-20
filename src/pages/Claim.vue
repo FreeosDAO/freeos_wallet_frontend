@@ -4,9 +4,11 @@
       <b>Freeos system is not currently operational. Please check back later.</b>
     </div>
     <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) === 1">
+      <div class="q-ma-md">
+        <q-btn color="primary" @click="() => actionClaim(accountInfo.account_name)" no-caps label="TEST" />
+      </div>
       <div class="q-ma-md q-mt-lg">
-        <q-btn :disable="isButtonDisable()" :color="isButtonDisable() ? 'dark' : 'primary'" @click="() => actionClaim()" no-caps label="Claim FreeOS" />
-        <q-btn color="primary" @click="() => actionClaim()" no-caps label="TEST Claim FreeOS" />
+        <q-btn :disable="isButtonDisable()" :color="isButtonDisable() ? 'dark' : 'primary'" @click="() => actionClaim(accountInfo.account_name)" no-caps label="Claim FreeOS" />
       </div>
       <div class="q-ma-md" v-if="claimInfo&&claimInfo.respIsUserAlreadyClaimed">
         Next claim will be available in {{getDateDiff()}} days
@@ -40,6 +42,20 @@
 <!--        />-->
 <!--      </div>-->
     </div>
+    <q-dialog v-model="isShowSuccessDialog">
+      <q-card>
+        <q-card-section class="row items-center q-pb-none">
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section>
+          <div class="text-h4 text-center" style="color: #5a89a3; font-weight: bolder;">Congratulations!</div>
+          <div class="text-h6 text-center q-mt-lg q-mb-lg">You earned <b style="color: #41aad6">{{claimInfo.claimCalendar.claim_amount}} FREEOS</b></div>
+          <div class="text-center">Come back next week to earn <b>{{claimInfo.nextCalendar.claim_amount}} FREEOS</b></div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -50,13 +66,16 @@ export default {
   name: 'Claim',
   data () {
     return {
-      isNotification: true
+      isNotification: true,
+      isShowSuccessDialog: false
     }
   },
   computed: {
-    ...mapGetters('account', ['claimInfo'])
+    ...mapGetters('account', ['accountInfo', 'claimInfo']),
+    ...mapGetters('claim', ['isClaimed', 'userAfterBalance', 'userPreviousBalance'])
   },
   methods: {
+    ...mapActions('account', ['getClaimInfo']),
     ...mapActions('claim', ['actionClaim']),
     getDateDiff () {
       const endDate = new Date(this.claimInfo.claimCalendar.end * 1000)
@@ -86,7 +105,6 @@ export default {
           }
         }
       }
-      console.log(true)
       return true
     },
     isDisplayingStakedMessage () {
@@ -113,6 +131,21 @@ export default {
         this.isDisplayingStakedMessage() ||
         this.isDisplayingHoldingRequirement() ||
         this.claimInfo.respIsUserAlreadyClaimed
+    }
+  },
+  watch: {
+    isClaimed: {
+      immediate: true,
+      handler: function (val) {
+        if (val) {
+          if (this.userPreviousBalance + this.claimInfo.claimCalendar.claim_amount === this.userAfterBalance) {
+            console.log(this.accountInfo.account_name)
+            console.log(this.claimInfo.nextCalendar.claim_amount)
+            this.isShowSuccessDialog = true
+            this.getClaimInfo(this.accountInfo.account_name)
+          }
+        }
+      }
     }
   }
 }

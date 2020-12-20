@@ -22,6 +22,7 @@ export default () => ({
     respFreeosRecord: '',
     respStakeRequirement: '',
     respIsUserAlreadyClaimed: '',
+    nextCalendar: '',
     respAirKey: ''
   }
 })

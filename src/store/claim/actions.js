@@ -1,11 +1,21 @@
 import notifyAlert from 'src/services/notify-alert'
 import { RpcError } from 'eosjs'
 
-export const actionClaim = async function ({ state }) {
-  let result
+export const actionClaim = async function ({ commit }, accountName) {
+  const { JsonRpc } = require('eosjs')
+  const rpc = new JsonRpc('https://' + process.env.NETWORK_HOST + ':' + process.env.NETWORK_PORT, { fetch }) // endpoint
+  const resp3 = await rpc.get_table_rows({
+    json: true,
+    code: process.env.AIRCLAIM_CONTRACT,
+    scope: accountName,
+    table: 'accounts',
+    lower_bound: 'FREEOS',
+    limit: 1
+  })
+  const userPreviousBalance = (resp3.rows[0] && parseFloat(resp3.rows[0].balance)) || 0
+  commit('setUserPreviousBalance', userPreviousBalance)
   try {
-    console.log('testetssetset')
-    result = await this.$transit.eosApi.transact({
+    const result = await this.$transit.eosApi.transact({
       actions: [{
         account: 'freeos333333', // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
         name: 'claim', // name of the action to call
@@ -25,6 +35,17 @@ export const actionClaim = async function ({ state }) {
     console.log(result)
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console) // Kenneth: Notify message in green
+      const resp3After = await rpc.get_table_rows({
+        json: true,
+        code: process.env.AIRCLAIM_CONTRACT,
+        scope: accountName,
+        table: 'accounts',
+        lower_bound: 'FREEOS',
+        limit: 1
+      })
+      const userAfterBalance = (resp3After.rows[0] && parseFloat(resp3After.rows[0].balance)) || 0
+      commit('setUserAfterBalance', userAfterBalance)
+      commit('setIsClaimed', true)
     } else {
       notifyAlert('err', 'The action could not be completed. Please try later') // Kenneth: Notify error in red
     }

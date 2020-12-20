@@ -114,12 +114,14 @@ export const getClaimInfo = async function ({ commit }, accountName) {
   })
   const currentDate = Math.floor((new Date()).getTime() / 1000)
   let calendarAndRequireRow = null
+  let nextCalendar = null
   if (resp4.rows && resp4.rows.length) {
-    resp4.rows.map((row) => {
+    resp4.rows.map((row, index) => {
       const iStartDate = row.start
       const iEndDate = row.end
       if (currentDate > iStartDate && currentDate < iEndDate) {
         calendarAndRequireRow = row
+        nextCalendar = resp4.rows[index + 1]
       }
     })
   }
@@ -141,6 +143,7 @@ export const getClaimInfo = async function ({ commit }, accountName) {
     claimCalendar: calendarAndRequireRow ?? {
       week_number: 0
     },
+    nextCalendar: nextCalendar,
     freeosHoldingRequire: calendarAndRequireRow ?? {
       week_number: 0
     },
