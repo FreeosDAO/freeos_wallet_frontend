@@ -6,6 +6,7 @@
     <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) === 1">
       <div class="q-ma-md q-mt-lg">
         <q-btn :disable="isDisableClaim() || isDisplayingStakedMessage() || isDisplayingHoldingRequirement() || claimInfo.respIsUserAlreadyClaimed" color="primary" @click="() => actionClaim()" no-caps label="Claim FreeOS" />
+        <q-btn :disable="!isDisableClaim() || isDisplayingStakedMessage() || isDisplayingHoldingRequirement() || claimInfo.respIsUserAlreadyClaimed" color="primary" @click="() => actionClaim()" no-caps label="TEST Claim FreeOS" />
       </div>
       <div class="q-ma-md" v-if="claimInfo&&claimInfo.respIsUserAlreadyClaimed">
         Next claim will be available in {{getDateDiff()}} days
@@ -85,6 +86,7 @@ export default {
           }
         }
       }
+      console.log(true)
       return true
     },
     isDisplayingStakedMessage () {

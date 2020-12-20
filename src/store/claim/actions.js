@@ -2,8 +2,9 @@ import notifyAlert from 'src/services/notify-alert'
 import { RpcError } from 'eosjs'
 
 export const actionClaim = async function ({ state }) {
+  let result
   try {
-    const result = await this.$transit.eosApi.transact({
+    result = await this.$transit.eosApi.transact({
       actions: [{
         account: 'freeos333333', // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
         name: 'claim', // name of the action to call
@@ -20,6 +21,7 @@ export const actionClaim = async function ({ state }) {
       blocksBehind: 3,
       expireSeconds: 30
     })
+    console.log(result)
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console) // Kenneth: Notify message in green
     } else {
