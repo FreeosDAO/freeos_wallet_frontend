@@ -21,6 +21,7 @@ export default () => ({
     respMasterSwitch: '',
     respFreeosRecord: '',
     respStakeRequirement: '',
+    respIsUserAlreadyClaimed: '',
     respAirKey: ''
   }
 })

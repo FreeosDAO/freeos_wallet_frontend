@@ -123,6 +123,17 @@ export const getClaimInfo = async function ({ commit }, accountName) {
       }
     })
   }
+  let respIsUserAlreadyClaimed = null
+  if (calendarAndRequireRow && calendarAndRequireRow.week_number) {
+    respIsUserAlreadyClaimed = await rpc.get_table_rows({
+      json: true,
+      code: process.env.AIRCLAIM_CONTRACT,
+      scope: accountName,
+      table: 'claims',
+      lower_bound: calendarAndRequireRow.week_number,
+      limit: 1
+    })
+  }
   const claimInfo = {
     eosInAccount: resp1.rows[0],
     eosStaked: resp2.rows[0],
@@ -136,6 +147,7 @@ export const getClaimInfo = async function ({ commit }, accountName) {
     respMasterSwitch: respMasterSwitch.rows[0],
     respFreeosRecord: respFreeosRecord.rows[0],
     respStakeRequirement: respStakeRequirement.rows[0],
+    respIsUserAlreadyClaimed: respIsUserAlreadyClaimed?.rows[0],
     respAirKey: respAirKey.rows[0]
   }
   console.log(claimInfo)
@@ -146,6 +158,7 @@ export const getClaimInfo = async function ({ commit }, accountName) {
   console.log(resp1)
   console.log(resp2)
   console.log(resp3)
+  console.log(respIsUserAlreadyClaimed)
   console.log(resp4)
 }
 

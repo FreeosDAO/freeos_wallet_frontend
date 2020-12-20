@@ -44,22 +44,22 @@
         <div class="col-xs-12 col-md-2 q-mb-md">
           <img width="110" src="~assets/freeos_icon.png">
         </div>
-        <div v-if="claimInfo" class="col-xs-12 col-md-5 row text-left">
+        <div v-if="isAuthenticated&&claimInfo" class="col-xs-12 col-md-5 row text-left">
           <div class="col-xs-3"></div>
           <div class="col-xs-8">
             <div class="row">
               <div class="col-5">Liquid: </div>
-              <div class="col-5 text-primary text-weight-bold">{{(claimInfo.eosInAccount?.balance) ?? 0}}</div>
+              <div class="col-5 text-primary text-weight-bold">{{(claimInfo.eosInAccount&&claimInfo.eosInAccount.balance) || '0.0000 EOS'}}</div>
             </div>
             <q-separator class="q-mt-sm q-mb-sm" />
             <div class="row">
               <div class="col-5">Staked: </div>
-              <div class="col-5 text-primary text-weight-bold">{{(claimInfo.eosStaked?.stake) ?? 0}}</div>
+              <div class="col-5 text-primary text-weight-bold">{{(claimInfo.eosStaked&&claimInfo.eosStaked.stake) || '0.0000 EOS'}}</div>
             </div>
             <q-separator class="q-mt-sm q-mb-sm" />
             <div class="row text-green text-weight-bold">
               <div class="col-5">Total FREEOS: </div>
-              <div class="col-5">{{(claimInfo.freeosInAccount?.balance) ?? 0}}</div>
+              <div class="col-5">{{(claimInfo.freeosInAccount&&claimInfo.freeosInAccount.balance) || '0.0000 FREEOS'}}</div>
             </div>
           </div>
         </div>
@@ -194,6 +194,7 @@ export default {
     isAuthenticated: {
       immediate: true,
       handler: function (val) {
+        console.log(this.claimInfo)
         console.log(val)
         if (val && this.accountInfo) {
           this.getClaimInfo(this.accountInfo.account_name)
