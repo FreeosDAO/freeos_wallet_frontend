@@ -1,8 +1,8 @@
 <template>
   <div class="text-center">
-    <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) !== 1">
-      <b>Freeos system is not currently operational. Please check back later.</b>
-    </div>
+<!--    <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) !== 1">-->
+<!--      <b>Freeos system is not currently operational. Please check back later.</b>-->
+<!--    </div>-->
     <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) === 1">
       <div class="q-ma-md">
         <q-btn color="primary" @click="() => actionClaim(accountInfo.account_name)" no-caps label="TEST" />
