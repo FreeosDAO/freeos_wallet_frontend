@@ -4,9 +4,6 @@
 <!--      <b>Freeos system is not currently operational. Please check back later.</b>-->
 <!--    </div>-->
     <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) === 1">
-      <div class="q-ma-md">
-        <q-btn color="primary" @click="() => actionClaim(accountInfo.account_name)" no-caps label="TEST" />
-      </div>
       <div class="q-ma-md q-mt-lg">
         <q-btn :disable="isButtonDisable()" :color="isButtonDisable() ? 'dark' : 'primary'" @click="() => actionClaim(accountInfo.account_name)" no-caps label="Claim FreeOS" />
       </div>
