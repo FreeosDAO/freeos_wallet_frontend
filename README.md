@@ -1,6 +1,6 @@
-# FreeOS App (freeos)
+# Freeos App (freeos)
 
-Application to claim your FreeOS tokens
+Application to claim your Freeos tokens
 
 # Clone the repository
 ```bash
