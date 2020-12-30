@@ -25,13 +25,13 @@ export const connect = async function ({ commit }, walletId) {
       message = walletState.connectionErrorMessage
       messageStatus = 0
     } else if (walletState.accountInfo) {
-      // if (!this.$transit.wallet) {
-      message = 'login successfully'
-      commit('setAccount', {
-        account: walletState.accountInfo,
-        walletId
-      })
-      // }
+      if (!this.$transit.wallet || !this.$transit.wallet.accountInfo) {
+        message = 'login successfully'
+        commit('setAccount', {
+          account: walletState.accountInfo,
+          walletId
+        })
+      }
     }
     if (message) {
       // You can add some snackbar message here
