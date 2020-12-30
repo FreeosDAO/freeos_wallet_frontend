@@ -10,7 +10,6 @@ import notifyAlert from 'src/services/notify-alert'
  */
 export const connect = async function ({ commit }, walletId) {
   commit('setConnecting', true)
-  console.log(this.$transit)
   const wallet = this.$transit.accessContext.initWallet(this.$transit.accessContext.getWalletProviders().find(r => r.id === walletId))
   wallet.subscribe(walletState => {
     let message
@@ -26,7 +25,7 @@ export const connect = async function ({ commit }, walletId) {
       message = walletState.connectionErrorMessage
       messageStatus = 0
     } else if (walletState.accountInfo) {
-      if (!this.$transit.wallet) {
+      if (!this.$transit.wallet || !this.$transit.wallet.accountInfo) {
         message = 'login successfully'
         commit('setAccount', {
           account: walletState.accountInfo,
