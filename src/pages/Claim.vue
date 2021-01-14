@@ -48,8 +48,8 @@
 
         <q-card-section>
           <div class="text-h4 text-center" style="color: #5a89a3; font-weight: bolder;">Congratulations!</div>
-          <div class="text-h6 text-center q-mt-lg q-mb-lg">You earned <b style="color: #41aad6">{{claimInfo.claimCalendar.claim_amount}} FREEOS</b></div>
-          <div class="text-center">Come back next week to earn <b>{{claimInfo.nextCalendar.claim_amount}} FREEOS</b></div>
+          <div class="text-h6 text-center q-mt-lg q-mb-lg">You earned <b style="color: #41aad6">{{claimInfo.claimCalendar && claimInfo.claimCalendar.claim_amount}} FREEOS</b></div>
+          <div class="text-center">Come back next week to earn <b>{{claimInfo.nextCalendar && claimInfo.nextCalendar.claim_amount}} FREEOS</b></div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -135,9 +135,8 @@ export default {
       immediate: true,
       handler: function (val) {
         if (val) {
-          if (this.userPreviousBalance + this.claimInfo.claimCalendar.claim_amount === this.userAfterBalance) {
+          if (this.userPreviousBalance + this.claimInfo.claimCalendar?.claim_amount === this.userAfterBalance) {
             console.log(this.accountInfo.account_name)
-            console.log(this.claimInfo.nextCalendar.claim_amount)
             this.isShowSuccessDialog = true
             this.getClaimInfo(this.accountInfo.account_name)
           }
