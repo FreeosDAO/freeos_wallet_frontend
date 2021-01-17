@@ -6,7 +6,6 @@
         <q-btn :style="'visibility: ' + (isAuthenticated ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
         <div style="display: flex; align-items: center;">
           <div v-if="isAuthenticated" style="margin-right: 1rem;">{{accountInfo.account_name}}</div>
-<!--          <q-btn color="black" style="justify-self: flex-end; margin-right: 1rem;" @click="onTomTest">Tom Test Button</q-btn>-->
 <!--          <WalletLoginDialog v-on:onSigninFinish="onSigninFinish"></WalletLoginDialog>-->
           <q-btn v-if="!isAuthenticated" style="justify-self: flex-end;" @click="() => connect('scatter')">Login</q-btn>
           <q-btn v-if="isAuthenticated" style="justify-self: flex-end;" @click="() => logout()">Logout</q-btn>
@@ -81,8 +80,6 @@
 </template>
 
 <script>
-import { Api, JsonRpc } from 'eosjs'
-import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 // import WalletLoginDialog from 'components/account-management/WalletLoginDialog'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -105,19 +102,6 @@ const menuList = [
     separator: true,
     route: '/stake'
   }
-  // {
-  //   icon: 'account_balance_wallet',
-  //   label: 'Buy',
-  //   separator: true,
-  //   route: '/buy'
-  // },
-  // {
-  //   icon: 'info',
-  //   iconColor: 'primary',
-  //   label: 'Info',
-  //   separator: false,
-  //   route: '/account'
-  // }
 ]
 export default {
   components: {
@@ -144,49 +128,6 @@ export default {
     onSelectMenu (menuItem) {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
-    },
-    async TOMconnect (action, dataValue) {
-      // const privateKey = localStorage.getItem('freeos_key')
-      console.log(localStorage.getItem('freeos_account'))
-      //  const privateKey = this.key
-      //  const rpc = new JsonRpc('https://kylin-dsp-1.liquidapps.io/')
-      //  const signatureProvider = new JsSignatureProvider([privateKey])
-      // transit library
-      const privateKey = this.key
-      const rpc = new JsonRpc('https://kylin-dsp-1.liquidapps.io/')
-      const signatureProvider = new JsSignatureProvider([privateKey])
-      const api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
-      const resultWithConfig = await api.transact({
-        actions: [{
-          account: 'freeos333333',
-          name: action,
-          authorization: [{
-            actor: 'tommccann333',
-            permission: 'active'
-          }],
-          data: {
-            user: 'tommccann333',
-            account_type: 'e',
-            permission: 'active',
-            threshold: 50000
-            // auth: {
-            //   'threshold': 1,
-            //   'keys': [{
-            //     'key': "5JddzsLKQkPFGZxTiUSZJf6WQXkx1ivsqNBpErZV5LEvC87CzoS",
-            //     'weight': 1
-            //   }],
-            // }
-          }
-        }]
-      }, {
-        blocksBehind: 3,
-        expireSeconds: 30
-      })
-      console.log(resultWithConfig)
-      return resultWithConfig
-    },
-    onTomTest () {
-      this.TOMconnect('reguser', 'freeos333333')
     },
     ...mapActions('account', ['connect', 'logout', 'getClaimInfo'])
   },
