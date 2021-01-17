@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 
 import account from './account'
 import claim from './claim'
-import reguser from './reguser'
 import stake from './stake'
 import unstake from './unstake'
 import transfer from './transfer'
@@ -26,7 +25,6 @@ export default function (/* { ssrContext } */) {
       claim,
       stake,
       unstake,
-      reguser,
       transfer
     },
 
