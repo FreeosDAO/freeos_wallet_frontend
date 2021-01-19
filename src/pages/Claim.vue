@@ -5,7 +5,7 @@
 <!--    </div>-->
     <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) === 1">
       <div class="q-ma-md q-mt-lg">
-        <q-btn :disable="isButtonDisable()" :color="isButtonDisable() ? 'dark' : 'primary'" @click="() => actionClaim(accountInfo.account_name)" no-caps label="Claim FreeOS" />
+        <q-btn :disable="isDisableClaim()" :color="isDisableClaim() ? 'dark' : 'primary'" @click="() => actionClaim(accountInfo.account_name)" no-caps label="Claim FreeOS" />
       </div>
       <div class="q-ma-md" v-if="claimInfo&&claimInfo.respIsUserAlreadyClaimed">
         Next claim will be available in {{getDateDiff()}} days
@@ -79,25 +79,33 @@ export default {
       const startDate = new Date()
       return Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24))
     },
+    isMasterSwitchOpen () {
+      return Number(this.claimInfo.respMasterSwitch.value) === 1
+    },
     isDisableClaim () {
-      // 1. For it to to in a valid claim week. i.e. NOT week 0
-      if (this.claimInfo.claimCalendar.week_number !== 0) {
-        // 2. For the user to have staked. i.e. their 'stake' field in the user record is equal to the 'stake_requirement' field.
+      // For it to to in a valid claim week. i.e. NOT week 0
+      if (this.claimInfo.claimCalendar.week_number === 0) {
+        return true
+      }
+      // if week 1, stake_requirement can be 0
+      if (this.claimInfo.claimCalendar.week_number === 1 && this.isMasterSwitchOpen()) {
+        return false
+      }
+      // 2. For the user to have staked. i.e. their 'stake' field in the user record is equal to the 'stake_requirement' field.
+      if (
+        this.claimInfo.respFreeosRecord &&
+        (this.claimInfo.respFreeosRecord.stake === this.claimInfo.respFreeosRecord.stake_requirement)
+      ) {
+        // 3. For the user to have balance of FREEOS >= the holding requirement for the week (go to week record and look at 'tokens_required'
         if (
-          this.claimInfo.respFreeosRecord &&
-          (this.claimInfo.respFreeosRecord.stake === this.claimInfo.respFreeosRecord.stake_requirement)
+          this.claimInfo.freeosInAccount &&
+          (parseFloat(this.claimInfo.freeosInAccount.balance) > this.claimInfo.freeosHoldingRequire.tokens_required)
         ) {
-          // 3. For the user to have balance of FREEOS >= the holding requirement for the week (go to week record and look at 'tokens_required'
-          if (
-            this.claimInfo.freeosInAccount &&
-            (parseFloat(this.claimInfo.freeosInAccount.balance) > this.claimInfo.freeosHoldingRequire.tokens_required)
-          ) {
-            // 4. For 'masterswitch' value to be '1'
-            if (parseFloat(this.claimInfo.respMasterSwitch.value) === 1) {
-              // 5. They have not already claimed in the current week (see the table read required in the ‘Suggested Coding Activities’ section).
-              if (!this.claimInfo.respIsUserAlreadyClaimed) {
-                return false
-              }
+          // 4. For 'masterswitch' value to be '1'
+          if (this.isMasterSwitchOpen()) {
+            // 5. They have not already claimed in the current week (see the table read required in the ‘Suggested Coding Activities’ section).
+            if (!this.claimInfo.respIsUserAlreadyClaimed) {
+              return false
             }
           }
         }
@@ -105,12 +113,11 @@ export default {
       return true
     },
     isDisplayingStakedMessage () {
-      if (this.claimInfo.claimCalendar.week_number !== 0) {
-        if (parseFloat(this.claimInfo.respMasterSwitch.value) === 1) {
-          if (!this.hasUserStaked()) {
-            return true
-          }
-        }
+      if (!this.isDisableClaim()) {
+        return false
+      }
+      if (this.claimInfo.claimCalendar.week_number !== 0 && this.isMasterSwitchOpen() && !this.hasUserStaked()) {
+        return true
       }
       return false
     },
@@ -122,12 +129,6 @@ export default {
     },
     isDisplayingHoldingRequirement () {
       return this.claimInfo.freeosInAccount && (this.claimInfo.freeosInAccount.balance < this.claimInfo.freeosHoldingRequire.tokens_required)
-    },
-    isButtonDisable () {
-      return this.isDisableClaim() ||
-        this.isDisplayingStakedMessage() ||
-        this.isDisplayingHoldingRequirement() ||
-        this.claimInfo.respIsUserAlreadyClaimed
     }
   },
   watch: {
@@ -136,7 +137,6 @@ export default {
       handler: function (val) {
         if (val) {
           if (this.userPreviousBalance + this.claimInfo.claimCalendar?.claim_amount === this.userAfterBalance) {
-            console.log(this.accountInfo.account_name)
             this.isShowSuccessDialog = true
             this.getClaimInfo(this.accountInfo.account_name)
           }
