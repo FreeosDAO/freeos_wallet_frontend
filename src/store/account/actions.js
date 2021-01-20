@@ -136,7 +136,7 @@ export const getClaimInfo = async function ({ commit }, accountName) {
     })
   }
   const claimInfo = {
-    eosInAccount: resp1.rows[0],
+    liquidInAccount: resp1.rows[0],
     eosStaked: resp2.rows[0],
     freeosInAccount: resp3.rows[0],
     claimCalendar: calendarAndRequireRow ?? {

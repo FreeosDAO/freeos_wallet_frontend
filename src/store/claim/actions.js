@@ -17,7 +17,7 @@ export const actionClaim = async function ({ commit }, accountName) {
   try {
     const result = await this.$transit.eosApi.transact({
       actions: [{
-        account: 'freeos333333', // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
+        account: process.env.AIRCLAIM_CONTRACT, // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
         name: 'claim', // name of the action to call
         authorization: [{
           actor: this.$transit.wallet.auth.accountName, // the claim action is called on behalf of the user

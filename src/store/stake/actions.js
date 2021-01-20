@@ -3,34 +3,41 @@ import { JsonRpc, RpcError } from 'eosjs'
 
 export const actionStake = async function ({ state }) {
   try {
-    const rpc = new JsonRpc()
+    const rpc = new JsonRpc('https://' + process.env.NETWORK_HOST + ':' + process.env.NETWORK_PORT, { fetch }) // endpoint
+
     const userRecord = await rpc.get_table_rows({
       json: true,
-      code: '',
-      scope: this.$transit.wallet.auth.accountName,
-      table: '',
+      code: process.env.AIRCLAIM_CONTRACT,
+      scope: process.env.AIRCLAIM_CONTRACT,
+      table: 'stake',
       limit: 1
     })
+    const quantity = userRecord.rows[0].stake_requirement ? userRecord.rows[0].stake_requirement : userRecord.rows[0].default_stake
 
+    const actions = [{
+      account: process.env.AIRCLAIM_CONTRACT,
+      name: 'transfer',
+      authorization: [{
+        actor: this.$transit.wallet.auth.accountName,
+        permission: this.$transit.wallet.auth.permission
+      }],
+      data: {
+        from: this.$transit.wallet.auth.accountName,
+        to: process.env.AIRCLAIM_CONTRACT,
+        quantity,
+        memo: 'stake from ' + this.$transit.wallet.auth.accountName
+      }
+    }]
+
+    console.log(actions)
     const result = await this.$transit.eosApi.transact({
-      actions: [{
-        account: '',
-        name: 'stake',
-        authorization: [{
-          actor: this.$transit.wallet.auth.accountName,
-          permission: this.$transit.wallet.auth.permission
-        }],
-        data: {
-          from: this.$transit.wallet.auth.accountName,
-          to: '',
-          quantity: userRecord.rows[0].stake_requirement,
-          memo: 'stake from ' + this.$transit.wallet.auth.accountName
-        }
-      }]
+      actions
     }, {
       blocksBehind: 3,
       expireSeconds: 30
     })
+    console.log(result)
+
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console)
     } else {
