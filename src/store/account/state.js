@@ -3,7 +3,7 @@ export default () => ({
   connecting: false,
   path: '/claim',
   claimInfo: {
-    eosInAccount: {
+    liquidInAccount: {
       balance: ''
     },
     eosStaked: {

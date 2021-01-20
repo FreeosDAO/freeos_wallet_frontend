@@ -1,23 +1,16 @@
 <template>
-  <div class="text-center" style="max-width: 1000px; margin: 0 auto;">
+  <div class="text-center q-mx-auto" style="max-width: 1000px;">
     <div class="q-ma-lg">
-      You have 100 EOS staked on your account
+      You have {{stakeAmount}} staked on your account
     </div>
     <div class="row full-width justify-around">
       <div class="col-xs-10 col-sm-5 q-mb-lg">
         <q-card>
           <q-card-section>
-            <div class="q-ma-md">
-              Stake EOS tokens
+            <div class="text-h5 q-pa-md q-mx-auto" style="width: 70%;">
+              Stake {{claimInfo.liquidInAccount.balance}}
             </div>
-            <div class="q-pa-md q-ml-auto q-mr-auto" style="width: 70%;">
-              <q-input
-                v-model.number="stakeAmount"
-                type="number"
-                outlined
-                placeholder="Amount"
-              />
-            </div>
+            <p>To be eligible to Claim your weekly FREEOS tokens</p>
             <div class="q-ma-md q-mt-lg">
               <q-btn color="primary" @click="() => actionStake()" no-caps label="Stake" />
             </div>
@@ -108,16 +101,20 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'StakeAndUnstake',
   data () {
     return {
+      stakedAmount: null,
       stakeAmount: null,
       unstakeAmount: null,
       isShowUnstakeDialog: false
     }
+  },
+  computed: {
+    ...mapGetters('account', ['claimInfo'])
   },
   methods: {
     ...mapActions('stake', ['actionStake']),
