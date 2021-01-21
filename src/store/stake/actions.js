@@ -15,7 +15,7 @@ export const actionStake = async function ({ state }) {
     const quantity = userRecord.rows[0].stake_requirement ? userRecord.rows[0].stake_requirement : userRecord.rows[0].default_stake
 
     const actions = [{
-      account: process.env.AIRCLAIM_CONTRACT,
+      account: 'eosio.token',
       name: 'transfer',
       authorization: [{
         actor: this.$transit.wallet.auth.accountName,
@@ -39,7 +39,7 @@ export const actionStake = async function ({ state }) {
     console.log(result)
 
     if (result.processed.receipt.status === 'executed') {
-      notifyAlert('success', result.processed.action_traces[0].console)
+      notifyAlert('success', result.processed.action_traces[0].console + 'success')
     } else {
       notifyAlert('err', 'The action could not be completed. Please try later')
     }
