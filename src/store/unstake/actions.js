@@ -5,11 +5,11 @@ export const actionUnstake = async function ({ state }) {
   try {
     const result = await this.$transit.eosApi.transact({
       actions: [{
-        account: '',
+        account: process.env.AIRCLAIM_CONTRACT,
         name: 'unstake',
         authorization: [{
           actor: this.$transit.wallet.auth.accountName,
-          permission: 'active'
+          permission: this.$transit.wallet.auth.permission
         }],
         data: {
           user: this.$transit.wallet.auth.accountName
@@ -19,6 +19,7 @@ export const actionUnstake = async function ({ state }) {
       blocksBehind: 3,
       expireSeconds: 30
     })
+    console.log(result)
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console)
     } else {
