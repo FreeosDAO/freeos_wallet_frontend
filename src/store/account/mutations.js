@@ -15,6 +15,13 @@ export const setClaimInfo = function (state, claimInfo) {
   state.claimInfo = claimInfo
 }
 
+export const setClaimAttributeVal = function (state, payload) {
+  const attr = payload.key
+  const val = payload.value
+
+  state.claimInfo[attr] = val
+}
+
 export const clearAccount = function (state) {
   localStorage.removeItem('walletId')
   state.account = null

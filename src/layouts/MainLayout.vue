@@ -129,7 +129,7 @@ export default {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
     },
-    ...mapActions('account', ['connect', 'logout', 'getClaimInfo'])
+    ...mapActions('account', ['connect', 'logout', 'getAccountInfo'])
   },
   watch: {
     isAuthenticated: {
@@ -138,7 +138,7 @@ export default {
         console.log(this.claimInfo)
         console.log(val)
         if (val && this.accountInfo) {
-          this.getClaimInfo(this.accountInfo.account_name)
+          this.getAccountInfo(this.accountInfo.account_name)
         }
         if (val && this.$route.query.returnUrl) {
           this.$router.push({ path: this.$route.query.returnUrl })

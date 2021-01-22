@@ -11,7 +11,7 @@
         Unstaking will take 10 days
       </p>
       <div class="q-ma-md q-mt-lg">
-        <q-btn color="primary" no-caps label="Unstake" @click="() => actionUnstake()" />
+        <q-btn color="primary" no-caps label="Unstake" @click="onUnstake()" />
       </div>
     </q-card-section>
   </q-card>
@@ -21,13 +21,18 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   computed: {
-    ...mapGetters('account', ['claimInfo']),
+    ...mapGetters('account', ['claimInfo', 'accountInfo']),
     stakedAmount () {
       return this.claimInfo.eosStaked.stake
     }
   },
   methods: {
-    ...mapActions('unstake', ['actionUnstake'])
+    ...mapActions('unstake', ['actionUnstake']),
+    ...mapActions('account', ['getAccountInfo']),
+    async onUnstake () {
+      await this.actionUnstake()
+      this.getAccountInfo()
+    }
   }
 }
 </script>

@@ -19,7 +19,7 @@ export const actionUnstake = async function ({ state }) {
       blocksBehind: 3,
       expireSeconds: 30
     })
-    console.log(result)
+
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console)
     } else {

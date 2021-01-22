@@ -72,7 +72,7 @@ export default {
     ...mapGetters('claim', ['isClaimed', 'userAfterBalance', 'userPreviousBalance'])
   },
   methods: {
-    ...mapActions('account', ['getClaimInfo']),
+    ...mapActions('account', ['getAccountInfo']),
     ...mapActions('claim', ['actionClaim']),
     getDateDiff () {
       const endDate = new Date(this.claimInfo.claimCalendar.end * 1000)
@@ -138,7 +138,7 @@ export default {
         if (val) {
           if (this.userPreviousBalance + this.claimInfo.claimCalendar?.claim_amount === this.userAfterBalance) {
             this.isShowSuccessDialog = true
-            this.getClaimInfo(this.accountInfo.account_name)
+            this.getAccountInfo(this.accountInfo.account_name)
           }
         }
       }
