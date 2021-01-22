@@ -7,7 +7,7 @@
         </div>
         <p>To be eligible to Claim your weekly FREEOS tokens</p>
         <div class="q-ma-md q-mt-lg">
-          <q-btn color="primary" :disable="!isMeetStakeMinRequirment()" @click="() => actionStake()" no-caps label="Stake" />
+          <q-btn color="primary" :disable="!isMeetStakeMinRequirment()" @click="() => onStake()" no-caps label="Stake" />
         </div>
       </q-card-section>
     </q-card>
@@ -23,6 +23,11 @@ export default {
   },
   methods: {
     ...mapActions('stake', ['actionStake']),
+    ...mapActions('account', ['getAccountInfo']),
+    async onStake () {
+      await this.actionStake()
+      this.getAccountInfo()
+    },
     isMeetStakeMinRequirment () {
       return this.getAbsoluteAmount(this.claimInfo.liquidInAccount.balance) >= this.getAbsoluteAmount(this.claimInfo.respStakeRequirement.default_stake)
     },

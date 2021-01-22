@@ -53,22 +53,22 @@ export const logout = async function ({ commit }) {
   // this.$router.push('/')
 }
 
-export function getAccountInfo (state, accountName) {
-  state.dispatch('GetFreeosRecord', accountName)
-  state.dispatch('getLiquidInAccount', accountName)
-  state.dispatch('getStakeRequirementInfo', accountName)
-  state.dispatch('getResAirKey', accountName)
-  state.dispatch('getUserStakedInfo', accountName)
-  state.dispatch('getFreeosInfo', accountName)
-  state.dispatch('getRespMasterSwitch', accountName)
-  state.dispatch('getClaimDetailInfo', accountName)
+export function getAccountInfo (state) {
+  state.dispatch('GetFreeosRecord')
+  state.dispatch('getLiquidInAccount')
+  state.dispatch('getStakeRequirementInfo')
+  state.dispatch('getResAirKey')
+  state.dispatch('getUserStakedInfo')
+  state.dispatch('getFreeosInfo')
+  state.dispatch('getRespMasterSwitch')
+  state.dispatch('getClaimDetailInfo')
 }
 
-export async function GetFreeosRecord (state, accountName) {
+export async function GetFreeosRecord (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
-    scope: accountName, // the subset of the table to query
+    scope: state.state.account.account_name, // the subset of the table to query
     table: 'users' // the name of the table
   })
   const val = {
@@ -78,11 +78,11 @@ export async function GetFreeosRecord (state, accountName) {
   state.commit('setClaimAttributeVal', val)
 }
 
-export async function getLiquidInAccount (state, accountName) {
+export async function getLiquidInAccount (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: 'eosio.token', // account containing smart contract
-    scope: accountName, // the subset of the table to query
+    scope: state.state.account.account_name, // the subset of the table to query
     table: 'accounts', // the name of the table
     limit: -1 // limit on number of rows returned
   })
@@ -93,7 +93,7 @@ export async function getLiquidInAccount (state, accountName) {
   state.commit('setClaimAttributeVal', val)
 }
 
-export async function getStakeRequirementInfo (state, accountName) {
+export async function getStakeRequirementInfo (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
@@ -108,11 +108,11 @@ export async function getStakeRequirementInfo (state, accountName) {
   state.commit('setClaimAttributeVal', val)
 }
 
-export async function getResAirKey (state, accountName) {
+export async function getResAirKey (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
-    scope: accountName,
+    scope: state.state.account.account_name,
     table: 'accounts',
     lower_bound: 'AIRKEY',
     limit: 1
@@ -125,11 +125,11 @@ export async function getResAirKey (state, accountName) {
   state.commit('setClaimAttributeVal', val)
 }
 
-export async function getUserStakedInfo (state, accountName) {
+export async function getUserStakedInfo (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
-    scope: accountName,
+    scope: state.state.account.account_name,
     table: 'users',
     limit: 1
   })
@@ -141,11 +141,11 @@ export async function getUserStakedInfo (state, accountName) {
   state.commit('setClaimAttributeVal', val)
 }
 
-export async function getFreeosInfo (state, accountName) {
+export async function getFreeosInfo (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
-    scope: accountName,
+    scope: state.state.account.account_name,
     table: 'accounts',
     lower_bound: 'FREEOS',
     limit: 1
@@ -175,7 +175,7 @@ export async function getRespMasterSwitch (state, acccountName) {
   state.commit('setClaimAttributeVal', val)
 }
 
-export async function getClaimCalendar (state, accountName) {
+export async function getClaimCalendar (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
@@ -207,8 +207,8 @@ export async function getClaimCalendar (state, accountName) {
   return calendarAndRequireRow
 }
 
-export async function getClaimDetailInfo (state, accountName) {
-  const calendarAndRequireRow = state.dispatch('getClaimCalendar', accountName)
+export async function getClaimDetailInfo (state) {
+  const calendarAndRequireRow = state.dispatch('getClaimCalendar')
 
   const claimCalendarVal = {
     key: 'claimCalendar',
@@ -231,7 +231,7 @@ export async function getClaimDetailInfo (state, accountName) {
     respIsUserAlreadyClaimed = await rpc.get_table_rows({
       json: true,
       code: process.env.AIRCLAIM_CONTRACT,
-      scope: accountName,
+      scope: state.state.account.account_name,
       table: 'claims',
       lower_bound: calendarAndRequireRow.week_number,
       limit: 1
