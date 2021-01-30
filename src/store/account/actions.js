@@ -50,7 +50,7 @@ export const connect = async function ({ commit }, walletId) {
 
 export const logout = async function ({ commit }) {
   commit('clearAccount', null)
-  //TODO
+  // TODO
   await this.$transit.wallet.terminate()
 
   // this.$router.push('/')
