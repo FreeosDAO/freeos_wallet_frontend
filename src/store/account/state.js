@@ -1,5 +1,5 @@
 export default () => ({
-  account: null,
+  accountName: null,
   connecting: false,
   path: '/claim',
   claimInfo: {

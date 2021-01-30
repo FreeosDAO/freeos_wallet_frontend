@@ -21,7 +21,7 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   computed: {
-    ...mapGetters('account', ['claimInfo', 'accountInfo']),
+    ...mapGetters('account', ['claimInfo']),
     stakedAmount () {
       return this.claimInfo.eosStaked.stake
     }
