@@ -29,8 +29,9 @@ export const connect = async function ({ commit }, walletId) {
     } else if (walletState.accountInfo) {
       if (!this.$transit.wallet || !this.$transit.wallet.accountInfo) {
         message = 'login successfully'
+        console.log(walletState.accountInfo, walletId)
         commit('setAccount', {
-          account: walletState.accountInfo,
+          accountName: walletState.accountInfo.account_name,
           walletId
         })
       }
@@ -48,8 +49,10 @@ export const connect = async function ({ commit }, walletId) {
 }
 
 export const logout = async function ({ commit }) {
-  await this.$transit.wallet.terminate()
   commit('clearAccount', null)
+  //TODO
+  await this.$transit.wallet.terminate()
+
   // this.$router.push('/')
 }
 
@@ -68,7 +71,7 @@ export async function GetFreeosRecord (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
-    scope: state.state.account.account_name, // the subset of the table to query
+    scope: state.state.accountName, // the subset of the table to query
     table: 'users' // the name of the table
   })
   const val = {
@@ -82,7 +85,7 @@ export async function getLiquidInAccount (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: 'eosio.token', // account containing smart contract
-    scope: state.state.account.account_name, // the subset of the table to query
+    scope: state.state.accountName, // the subset of the table to query
     table: 'accounts', // the name of the table
     limit: -1 // limit on number of rows returned
   })
@@ -112,7 +115,7 @@ export async function getResAirKey (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
-    scope: state.state.account.account_name,
+    scope: state.state.accountName,
     table: 'accounts',
     lower_bound: 'AIRKEY',
     limit: 1
@@ -129,7 +132,7 @@ export async function getUserStakedInfo (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
-    scope: state.state.account.account_name,
+    scope: state.state.accountName,
     table: 'users',
     limit: 1
   })
@@ -145,7 +148,7 @@ export async function getFreeosInfo (state) {
   const result = await rpc.get_table_rows({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
-    scope: state.state.account.account_name,
+    scope: state.state.accountName,
     table: 'accounts',
     lower_bound: 'FREEOS',
     limit: 1
@@ -231,7 +234,7 @@ export async function getClaimDetailInfo (state) {
     respIsUserAlreadyClaimed = await rpc.get_table_rows({
       json: true,
       code: process.env.AIRCLAIM_CONTRACT,
-      scope: state.state.account.account_name,
+      scope: state.state.accountName,
       table: 'claims',
       lower_bound: calendarAndRequireRow.week_number,
       limit: 1
@@ -250,4 +253,51 @@ export const setpath = function ({ commit }, pathe) {
   console.log('whatever', pathe)
   commit('setPath', pathe)
   // this.$router.push('/')
+}
+
+import { ConnectWallet } from '@protonprotocol/proton-web-sdk'
+const endpoints = ['https://api-testnet-proton.eosarabia.net']
+const selectorOptions = {
+  appName: 'Freeos', /* Optional: Name to show in modal, Default 'app' */
+  appLogo: '', /* Optional: Logo to show in modal */
+  customStyleOptions: { /* Optional: Custom style options for modal */
+    modalBackgroundColor: '#F4F7FA',
+    logoBackgroundColor: 'white',
+    isLogoRound: true,
+    optionBackgroundColor: 'white',
+    optionFontColor: 'black',
+    primaryFontColor: 'black',
+    secondaryFontColor: '#6B727F',
+    linkColor: '#752EEB'
+  }
+  // walletType: 'proton' /* Optional: Connect to only specified wallet (e.g. 'proton', 'anchor') */
+}
+export async function connectProton (state) {
+  // const result = await ConnectWallet({
+  //   linkOptions: {
+  //     endpoints
+  //     // rpc: rpc /* Optional: if you wish to provide rpc directly instead of endpoints */
+  //   },
+  //   transportOptions: {
+  //     requestAccount: '', /* Optional: Your proton account */
+  //     requestStatus: true /* Optional: Display request success and error messages, Default true */
+  //   },
+  //   selectorOptions
+  // })
+  // console.log(result)
+  // // state.commit('setAccount', {
+  // //   account: walletState.accountInfo,
+  // //   walletId
+  // // })
+  // // Login
+  const { link, session } = await ConnectWallet({
+    linkOptions: { chainId: process.env.NETWORK_CHAIN_ID, endpoints: endpoints },
+    transportOptions: { requestAccount: this.requestAccount, backButton: true },
+    selectorOptions: { appName: selectorOptions.appName, appLogo: selectorOptions.appLogo }
+  })
+  console.log(link, session)
+  state.commit('setAccount', {
+    accountName: session.auth.actor,
+    walletId: link.walletType
+  })
 }

@@ -5,9 +5,23 @@
       <q-toolbar style="justify-content: space-between;">
         <q-btn :style="'visibility: ' + (isAuthenticated ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
         <div style="display: flex; align-items: center;">
-          <div v-if="isAuthenticated" style="margin-right: 1rem;">{{accountInfo.account_name}}</div>
-<!--          <WalletLoginDialog v-on:onSigninFinish="onSigninFinish"></WalletLoginDialog>-->
-          <q-btn v-if="!isAuthenticated" style="justify-self: flex-end;" @click="() => connect('scatter')">Login</q-btn>
+          <div v-if="isAuthenticated" style="margin-right: 1rem;">{{accountName}}</div>
+          <q-btn-dropdown color="primary" label="Login" v-if="!isAuthenticated">
+            <q-list>
+              <q-item clickable v-close-popup @click="() => connect('scatter')">
+                <q-item-section>
+                  <q-item-label>Scatter</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+            <q-list>
+              <q-item clickable v-close-popup @click="() => connectProton()">
+                <q-item-section>
+                  <q-item-label>Anchor</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
           <q-btn v-if="isAuthenticated" style="justify-self: flex-end;" @click="() => logout()">Logout</q-btn>
         </div>
       </q-toolbar>
@@ -43,25 +57,7 @@
         <div class="col-xs-12 col-md-2 q-mb-md">
           <img width="110" src="~assets/freeos_icon.png">
         </div>
-        <div v-if="isAuthenticated&&claimInfo" class="col-xs-12 col-md-5 row text-left">
-          <div class="col-xs-3"></div>
-          <div class="col-xs-8">
-            <div class="row">
-              <div class="col-5">Liquid: </div>
-              <div class="col-5 text-primary text-weight-bold">{{(claimInfo.liquidInAccount&&claimInfo.liquidInAccount.balance) || '0'}}</div>
-            </div>
-            <q-separator class="q-mt-sm q-mb-sm" />
-            <div class="row">
-              <div class="col-5">Staked: </div>
-              <div class="col-5 text-primary text-weight-bold">{{(claimInfo.eosStaked&&claimInfo.eosStaked.stake) || '0'}}</div>
-            </div>
-            <q-separator class="q-mt-sm q-mb-sm" />
-            <div class="row text-green text-weight-bold">
-              <div class="col-5">Total FREEOS: </div>
-              <div class="col-5">{{(claimInfo.freeosInAccount&&claimInfo.freeosInAccount.balance) || '0'}}</div>
-            </div>
-          </div>
-        </div>
+        <balance v-if="isAuthenticated" class="col-xs-12 col-md-5 row text-left" />
       </div>
       <router-view />
     </q-page-container>
@@ -80,9 +76,9 @@
 </template>
 
 <script>
-// import WalletLoginDialog from 'components/account-management/WalletLoginDialog'
-import { mapActions, mapGetters } from 'vuex'
-
+// import WalletLoginDialog from 'components/accountManagement/WalletLoginDialog'
+import { mapState, mapActions, mapGetters } from 'vuex'
+import Balance from 'components/accountManagement/Balance'
 const menuList = [
   {
     icon: 'monetization_on',
@@ -104,8 +100,6 @@ const menuList = [
   }
 ]
 export default {
-  components: {
-  },
   data () {
     return {
       isShowDrawerButton: false,
@@ -115,7 +109,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('account', ['isAuthenticated', 'connecting', 'accountInfo', 'claimInfo'])
+    ...mapState({
+      accountName: state => state.account.accountName
+    }),
+    ...mapGetters('account', ['isAuthenticated', 'connecting'])
+  },
+  components: {
+    Balance
   },
   methods: {
     onSigninFinish (event) {
@@ -129,16 +129,14 @@ export default {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
     },
-    ...mapActions('account', ['connect', 'logout', 'getAccountInfo'])
+    ...mapActions('account', ['connect', 'logout', 'getAccountInfo', 'connectProton'])
   },
   watch: {
     isAuthenticated: {
       immediate: true,
       handler: function (val) {
-        console.log(this.claimInfo)
-        console.log(val)
-        if (val && this.accountInfo) {
-          this.getAccountInfo(this.accountInfo.account_name)
+        if (val && this.accountName) {
+          this.getAccountInfo(this.accountName)
         }
         if (val && this.$route.query.returnUrl) {
           this.$router.push({ path: this.$route.query.returnUrl })

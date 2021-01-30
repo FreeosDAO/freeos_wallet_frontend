@@ -1,9 +1,9 @@
 import notifyAlert from 'src/services/notify-alert'
 
-export const setAccount = function (state, { account, walletId }) {
-  if (!state.account) {
+export const setAccount = function (state, { accountName, walletId }) {
+  if (!state.accountName) {
     localStorage.walletId = walletId
-    state.account = account
+    state.accountName = accountName
     state.connecting = false
     if (this.$router.currentRoute.fullPath !== state.path) {
       this.$router.push({ path: state.path })
@@ -24,7 +24,7 @@ export const setClaimAttributeVal = function (state, payload) {
 
 export const clearAccount = function (state) {
   localStorage.removeItem('walletId')
-  state.account = null
+  state.accountName = null
   if (this.$router.currentRoute.fullPath !== '/') {
     this.$router.push({ path: '/' })
   }

@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'Claim',
@@ -68,7 +68,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('account', ['accountInfo', 'claimInfo']),
+    ...mapState({
+      accountName: state => state.account.accountName
+    }),
+    ...mapGetters('account', ['claimInfo']),
     ...mapGetters('claim', ['isClaimed', 'userAfterBalance', 'userPreviousBalance'])
   },
   methods: {
@@ -138,7 +141,7 @@ export default {
         if (val) {
           if (this.userPreviousBalance + this.claimInfo.claimCalendar?.claim_amount === this.userAfterBalance) {
             this.isShowSuccessDialog = true
-            this.getAccountInfo(this.accountInfo.account_name)
+            this.getAccountInfo(this.accountName)
           }
         }
       }
