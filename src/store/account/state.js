@@ -23,6 +23,7 @@ export default () => ({
     respStakeRequirement: '',
     respIsUserAlreadyClaimed: '',
     nextCalendar: '',
-    respAirKey: ''
+    respAirKey: '',
+    vestedInfo: ''
   }
 })

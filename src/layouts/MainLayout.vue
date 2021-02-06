@@ -8,7 +8,7 @@
           <div v-if="isAuthenticated" style="margin-right: 1rem;">{{accountName}}</div>
           <q-btn-dropdown color="primary" label="Login" v-if="!isAuthenticated">
             <q-list>
-              <q-item clickable v-close-popup @click="() => connect('scatter')">
+              <q-item clickable v-close-popup @click="() => connectWallet('scatter')">
                 <q-item-section>
                   <q-item-label>Scatter</q-item-label>
                 </q-item-section>
@@ -129,7 +129,7 @@ export default {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
     },
-    ...mapActions('account', ['connect', 'logout', 'getAccountInfo', 'connectProton'])
+    ...mapActions('account', ['connectWallet', 'logout', 'getAccountInfo', 'connectProton'])
   },
   watch: {
     isAuthenticated: {

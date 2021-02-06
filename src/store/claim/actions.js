@@ -1,10 +1,8 @@
 import notifyAlert from 'src/services/notify-alert'
 import { RpcError } from 'eosjs'
-
+import { connect } from 'src/utils/smartContractRequest'
 export const actionClaim = async function ({ commit }, accountName) {
-  const { JsonRpc } = require('eosjs')
-  const rpc = new JsonRpc('https://' + process.env.NETWORK_HOST + ':' + process.env.NETWORK_PORT, { fetch }) // endpoint
-  const resp3 = await rpc.get_table_rows({
+  const resp3 = await connect({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
     scope: accountName,
@@ -12,6 +10,7 @@ export const actionClaim = async function ({ commit }, accountName) {
     lower_bound: 'FREEOS',
     limit: 1
   })
+
   const userPreviousBalance = (resp3.rows[0] && parseFloat(resp3.rows[0].balance)) || 0
   commit('setUserPreviousBalance', userPreviousBalance)
   try {
@@ -32,10 +31,9 @@ export const actionClaim = async function ({ commit }, accountName) {
       blocksBehind: 3,
       expireSeconds: 30
     })
-    console.log(result)
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console) // Kenneth: Notify message in green
-      const resp3After = await rpc.get_table_rows({
+      const resp3After = connect({
         json: true,
         code: process.env.AIRCLAIM_CONTRACT,
         scope: accountName,
