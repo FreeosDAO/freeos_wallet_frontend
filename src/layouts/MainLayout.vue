@@ -71,10 +71,8 @@
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>
-
   </q-layout>
 </template>
-
 <script>
 // import WalletLoginDialog from 'components/accountManagement/WalletLoginDialog'
 import { mapState, mapActions, mapGetters } from 'vuex'
@@ -129,10 +127,7 @@ export default {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
     },
-    ...mapActions('account', ['connectWallet', 'logout', 'getAccountInfo', 'connectProton']),
-    ...mapActions({
-      getVestedRecord: 'vest/getVestedRecord'
-    })
+    ...mapActions('account', ['connectWallet', 'logout', 'getAccountInfo', 'connectProton'])
   },
   watch: {
     isAuthenticated: {
@@ -140,7 +135,6 @@ export default {
       handler: function (val) {
         if (val && this.accountName) {
           this.getAccountInfo()
-          this.getVestedRecord()
         }
         if (val && this.$route.query.returnUrl) {
           this.$router.push({ path: this.$route.query.returnUrl })
