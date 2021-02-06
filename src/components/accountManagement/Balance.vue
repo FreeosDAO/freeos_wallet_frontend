@@ -14,7 +14,7 @@
       <q-separator class="q-mt-sm q-mb-sm" />
       <div class="row">
         <div class="col-5 text-grey">Vested FREEOS: </div>
-        <div class="col-5 text-grey text-weight-bold">{{claimInfo.vestedInfo&&claimInfo.vestedInfo.balance || '0'}}</div>
+        <div class="col-5 text-grey text-weight-bold">{{vestedBalance}}</div>
         <div class="col-2">
           <q-btn
             size="sm"
@@ -34,9 +34,12 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 export default {
   computed: {
+    ...mapState({
+      vestedBalance: state => state.vest.balance
+    }),
     ...mapGetters('account', ['claimInfo'])
   },
   methods: {

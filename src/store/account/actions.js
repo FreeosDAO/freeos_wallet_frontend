@@ -63,7 +63,6 @@ export function getAccountInfo (state) {
   state.dispatch('getFreeosInfo')
   state.dispatch('getRespMasterSwitch')
   state.dispatch('getClaimDetailInfo')
-  state.dispatch('getVestedRecord')
 }
 
 export async function GetFreeosRecord (state) {
@@ -75,20 +74,6 @@ export async function GetFreeosRecord (state) {
   })
   const val = {
     key: 'respFreeosRecord',
-    value: result.rows[0]
-  }
-  state.commit('setClaimAttributeVal', val)
-}
-
-export async function getVestedRecord (state) {
-  const result = await connect({
-    json: true,
-    code: process.env.AIRCLAIM_CONTRACT, // the airclaim account
-    scope: state.state.accountName, // the subset of the table to query
-    table: 'vestaccounts' // the name of the table
-  })
-  const val = {
-    key: 'vestedInfo',
     value: result.rows[0]
   }
   state.commit('setClaimAttributeVal', val)
