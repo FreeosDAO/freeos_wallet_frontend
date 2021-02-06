@@ -1,6 +1,5 @@
 import notifyAlert from 'src/services/notify-alert'
-const { JsonRpc } = require('eosjs')
-const rpc = new JsonRpc('https://' + process.env.NETWORK_HOST + ':' + process.env.NETWORK_PORT, { fetch }) // endpoint
+import { connect } from 'src/utils/smartContractRequest'
 
 /**
  * Connect to a wallet
@@ -10,7 +9,7 @@ const rpc = new JsonRpc('https://' + process.env.NETWORK_HOST + ':' + process.en
  * @param walletId
  * @returns {Promise<void>}
  */
-export const connect = async function ({ commit }, walletId) {
+export const connectWallet = async function ({ commit }, walletId) {
   commit('setConnecting', true)
   const wallet = this.$transit.accessContext.initWallet(this.$transit.accessContext.getWalletProviders().find(r => r.id === walletId))
   wallet.subscribe(walletState => {
@@ -29,7 +28,6 @@ export const connect = async function ({ commit }, walletId) {
     } else if (walletState.accountInfo) {
       if (!this.$transit.wallet || !this.$transit.wallet.accountInfo) {
         message = 'login successfully'
-        console.log(walletState.accountInfo, walletId)
         commit('setAccount', {
           accountName: walletState.accountInfo.account_name,
           walletId
@@ -68,7 +66,7 @@ export function getAccountInfo (state) {
 }
 
 export async function GetFreeosRecord (state) {
-  const result = await rpc.get_table_rows({
+  const result = await connect({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
     scope: state.state.accountName, // the subset of the table to query
@@ -82,7 +80,7 @@ export async function GetFreeosRecord (state) {
 }
 
 export async function getLiquidInAccount (state) {
-  const result = await rpc.get_table_rows({
+  const result = await connect({
     json: true,
     code: 'eosio.token', // account containing smart contract
     scope: state.state.accountName, // the subset of the table to query
@@ -97,7 +95,7 @@ export async function getLiquidInAccount (state) {
 }
 
 export async function getStakeRequirementInfo (state) {
-  const result = await rpc.get_table_rows({
+  const result = await connect({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
     scope: process.env.AIRCLAIM_CONTRACT,
@@ -112,7 +110,7 @@ export async function getStakeRequirementInfo (state) {
 }
 
 export async function getResAirKey (state) {
-  const result = await rpc.get_table_rows({
+  const result = await connect({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
     scope: state.state.accountName,
@@ -129,7 +127,7 @@ export async function getResAirKey (state) {
 }
 
 export async function getUserStakedInfo (state) {
-  const result = await rpc.get_table_rows({
+  const result = await connect({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
     scope: state.state.accountName,
@@ -145,7 +143,7 @@ export async function getUserStakedInfo (state) {
 }
 
 export async function getFreeosInfo (state) {
-  const result = await rpc.get_table_rows({
+  const result = await connect({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
     scope: state.state.accountName,
@@ -162,7 +160,7 @@ export async function getFreeosInfo (state) {
 }
 
 export async function getRespMasterSwitch (state, acccountName) {
-  const result = await rpc.get_table_rows({
+  const result = await connect({
     json: true,
     code: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
     scope: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
@@ -179,7 +177,7 @@ export async function getRespMasterSwitch (state, acccountName) {
 }
 
 export async function getClaimCalendar (state) {
-  const result = await rpc.get_table_rows({
+  const result = await connect({
     json: true,
     code: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
     scope: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
@@ -231,7 +229,7 @@ export async function getClaimDetailInfo (state) {
 
   let respIsUserAlreadyClaimed = null
   if (calendarAndRequireRow && calendarAndRequireRow.week_number) {
-    respIsUserAlreadyClaimed = await rpc.get_table_rows({
+    respIsUserAlreadyClaimed = await connect({
       json: true,
       code: process.env.AIRCLAIM_CONTRACT,
       scope: state.state.accountName,

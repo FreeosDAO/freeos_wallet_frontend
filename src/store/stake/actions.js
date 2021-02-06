@@ -1,11 +1,10 @@
 import notifyAlert from 'src/services/notify-alert'
-import { JsonRpc, RpcError } from 'eosjs'
+import { connect } from 'src/utils/smartContractRequest'
+import { RpcError } from 'eosjs'
 
 export const actionStake = async function ({ state }) {
   try {
-    const rpc = new JsonRpc('https://' + process.env.NETWORK_HOST + ':' + process.env.NETWORK_PORT, { fetch }) // endpoint
-
-    const userRecord = await rpc.get_table_rows({
+    const userRecord = await connect({
       json: true,
       code: process.env.AIRCLAIM_CONTRACT,
       scope: process.env.AIRCLAIM_CONTRACT,

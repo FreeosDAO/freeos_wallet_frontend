@@ -8,7 +8,7 @@
           <div v-if="isAuthenticated" style="margin-right: 1rem;">{{accountName}}</div>
           <q-btn-dropdown color="primary" label="Login" v-if="!isAuthenticated">
             <q-list>
-              <q-item clickable v-close-popup @click="() => connect('scatter')">
+              <q-item clickable v-close-popup @click="() => connectWallet('scatter')">
                 <q-item-section>
                   <q-item-label>Scatter</q-item-label>
                 </q-item-section>
@@ -71,10 +71,8 @@
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>
-
   </q-layout>
 </template>
-
 <script>
 // import WalletLoginDialog from 'components/accountManagement/WalletLoginDialog'
 import { mapState, mapActions, mapGetters } from 'vuex'
@@ -129,14 +127,14 @@ export default {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
     },
-    ...mapActions('account', ['connect', 'logout', 'getAccountInfo', 'connectProton'])
+    ...mapActions('account', ['connectWallet', 'logout', 'getAccountInfo', 'connectProton'])
   },
   watch: {
     isAuthenticated: {
       immediate: true,
       handler: function (val) {
         if (val && this.accountName) {
-          this.getAccountInfo(this.accountName)
+          this.getAccountInfo()
         }
         if (val && this.$route.query.returnUrl) {
           this.$router.push({ path: this.$route.query.returnUrl })

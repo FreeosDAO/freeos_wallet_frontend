@@ -22,6 +22,6 @@ export default async ({ Vue, store }) => {
   store.$transit = transit
   console.log(transit)
   if (localStorage.walletId) {
-    store.dispatch('account/connect', localStorage.walletId)
+    store.dispatch('account/connectWallet', localStorage.walletId)
   }
 }
