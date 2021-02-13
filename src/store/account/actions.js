@@ -1,6 +1,14 @@
 import notifyAlert from 'src/services/notify-alert'
 import { connect } from 'src/utils/smartContractRequest'
 
+export function connectWallet (state, name) {
+  if (name === 'scatter') {
+    state.dispatch('connectScatter', 'scatter')
+  } else if (name === 'anchor') {
+    state.dispatch('connectProton')
+  }
+}
+
 /**
  * Connect to a wallet
  * Don't use arrow function here to have access to Vue prototype (this.$...)
@@ -9,7 +17,7 @@ import { connect } from 'src/utils/smartContractRequest'
  * @param walletId
  * @returns {Promise<void>}
  */
-export const connectWallet = async function ({ commit }, walletId) {
+export const connectScatter = async function ({ commit }, walletId) {
   commit('setConnecting', true)
   const wallet = this.$transit.accessContext.initWallet(this.$transit.accessContext.getWalletProviders().find(r => r.id === walletId))
   wallet.subscribe(walletState => {
@@ -293,7 +301,6 @@ export async function connectProton (state) {
     transportOptions: { requestAccount: this.requestAccount, backButton: true },
     selectorOptions: { appName: selectorOptions.appName, appLogo: selectorOptions.appLogo }
   })
-  console.log(link, session)
   state.commit('setAccount', {
     accountName: session.auth.actor,
     walletId: link.walletType

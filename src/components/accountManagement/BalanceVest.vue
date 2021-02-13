@@ -25,7 +25,8 @@ export default {
   },
   computed: {
     ...mapState({
-      vestedBalance: state => state.vest.balance
+      vestedBalance: state => state.vest.balance,
+      accountName: state => state.account.accountName
     })
   },
   methods: {
@@ -36,8 +37,9 @@ export default {
     })
   },
   mounted () {
-    this.getVestedRecord()
-    this.getUnVestHistory()
+    console.log(this.accountName)
+    this.getVestedRecord(this.accountName)
+    this.getUnVestHistory(this.accountName)
   }
 }
 </script>
