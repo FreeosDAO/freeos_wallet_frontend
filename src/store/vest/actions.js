@@ -1,4 +1,5 @@
 import { connect } from 'src/utils/smartContractRequest'
+import { Notify } from 'quasar'
 
 export async function getVestedRecord (state, accountName) {
   const config = {
@@ -19,10 +20,46 @@ export async function getUnVestHistory (state, accountName) {
     table: 'unvests',
     limit: 1
   })
-  console.log(result)
-  // TODO
+  state.commit('SET_UNVEST_HISTORY', result.rows)
 }
 
-export function unVest (state) {
-  console.log(1111)
+export async function unVest (state) {
+  try {
+    const accountName = this.$transit.wallet.auth.accountName
+    const result = await this.$transit.eosApi.transact({
+      actions: [{
+        account: process.env.AIRCLAIM_CONTRACT, // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
+        name: 'unvest', // name of the action to call
+        authorization: [{
+          actor: accountName, // the claim action is called on behalf of the user
+          permission: 'active' // name of permission, e.g. this and the line above are the equivalent of  -p yvetecoleman@active
+        }],
+        data: {
+          // Kenneth: only the following parameters required for claim action
+          user: accountName // account name = yvetecoleman
+        }
+      }]
+    }, {
+      blocksBehind: 3,
+      expireSeconds: 30
+    })
+
+    console.log(result)
+
+    if (result.processed.receipt.status === 'executed') {
+      Notify.create({
+        message: 'Unvest action successfully',
+        color: 'positive'
+      })
+      state.dispatch('getVestedRecord', accountName)
+      state.dispatch('getUnVestHistory', accountName)
+    } else {
+      Notify.create({
+        message: 'The action could not be completed. Please try later',
+        color: 'negative'
+      })
+    }
+  } catch (e) {
+    console.log(e)
+  }
 }
