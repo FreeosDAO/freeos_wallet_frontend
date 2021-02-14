@@ -1,6 +1,14 @@
 import notifyAlert from 'src/services/notify-alert'
 import { connect } from 'src/utils/smartContractRequest'
 
+export function connectWallet (state, name) {
+  if (name === 'scatter') {
+    state.dispatch('connectScatter', 'scatter')
+  } else if (name === 'anchor') {
+    state.dispatch('connectProton')
+  }
+}
+
 /**
  * Connect to a wallet
  * Don't use arrow function here to have access to Vue prototype (this.$...)
@@ -9,7 +17,7 @@ import { connect } from 'src/utils/smartContractRequest'
  * @param walletId
  * @returns {Promise<void>}
  */
-export const connectWallet = async function ({ commit }, walletId) {
+export const connectScatter = async function ({ commit }, walletId) {
   commit('setConnecting', true)
   const wallet = this.$transit.accessContext.initWallet(this.$transit.accessContext.getWalletProviders().find(r => r.id === walletId))
   wallet.subscribe(walletState => {
@@ -99,7 +107,7 @@ export async function getStakeRequirementInfo (state) {
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
     scope: process.env.AIRCLAIM_CONTRACT,
-    table: 'stake' // the name of the table
+    table: 'stakes' // the name of the table
   })
 
   const val = {
@@ -181,7 +189,7 @@ export async function getClaimCalendar (state) {
     json: true,
     code: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
     scope: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
-    table: 'weeks',
+    table: 'iterations',
     limit: 26
   })
 
@@ -214,7 +222,7 @@ export async function getClaimDetailInfo (state) {
   const claimCalendarVal = {
     key: 'claimCalendar',
     value: calendarAndRequireRow ?? {
-      week_number: 0
+      iteration_number: 0
     }
   }
   state.commit('setClaimAttributeVal', claimCalendarVal)
@@ -222,19 +230,19 @@ export async function getClaimDetailInfo (state) {
   const freeosHoldingRequireVal = {
     key: 'freeosHoldingRequire',
     value: calendarAndRequireRow ?? {
-      week_number: 0
+      iteration_number: 0
     }
   }
   state.commit('setClaimAttributeVal', freeosHoldingRequireVal)
 
   let respIsUserAlreadyClaimed = null
-  if (calendarAndRequireRow && calendarAndRequireRow.week_number) {
+  if (calendarAndRequireRow && calendarAndRequireRow.iteration_number) {
     respIsUserAlreadyClaimed = await connect({
       json: true,
       code: process.env.AIRCLAIM_CONTRACT,
       scope: state.state.accountName,
       table: 'claims',
-      lower_bound: calendarAndRequireRow.week_number,
+      lower_bound: calendarAndRequireRow.iteration_number,
       limit: 1
     })
   }
@@ -293,7 +301,6 @@ export async function connectProton (state) {
     transportOptions: { requestAccount: this.requestAccount, backButton: true },
     selectorOptions: { appName: selectorOptions.appName, appLogo: selectorOptions.appLogo }
   })
-  console.log(link, session)
   state.commit('setAccount', {
     accountName: session.auth.actor,
     walletId: link.walletType

@@ -24,7 +24,7 @@ export const actionStake = async function ({ state }) {
         from: this.$transit.wallet.auth.accountName,
         to: process.env.AIRCLAIM_CONTRACT,
         quantity,
-        memo: 'stake from ' + this.$transit.wallet.auth.accountName
+        memo: 'freeos stake'
       }
     }]
 

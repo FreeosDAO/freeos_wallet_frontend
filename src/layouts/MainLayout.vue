@@ -15,7 +15,7 @@
               </q-item>
             </q-list>
             <q-list>
-              <q-item clickable v-close-popup @click="() => connectProton()">
+              <q-item clickable v-close-popup @click="() => connectWallet('anchor')">
                 <q-item-section>
                   <q-item-label>Anchor</q-item-label>
                 </q-item-section>
@@ -127,7 +127,7 @@ export default {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
     },
-    ...mapActions('account', ['connectWallet', 'logout', 'getAccountInfo', 'connectProton'])
+    ...mapActions('account', ['connectWallet', 'logout', 'getAccountInfo'])
   },
   watch: {
     isAuthenticated: {

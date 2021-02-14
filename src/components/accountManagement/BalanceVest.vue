@@ -18,15 +18,19 @@
 import { mapState, mapActions } from 'vuex'
 
 export default {
-  data () {
-    return {
-      canUnvest: true
-    }
-  },
   computed: {
     ...mapState({
-      vestedBalance: state => state.vest.balance
-    })
+      vestedBalance: state => state.vest.balance,
+      unVestHistory: state => state.vest.unVestHistory,
+      accountName: state => state.account.accountName
+    }),
+    canUnvest () {
+      if (this.vestedBalance && !this.unVestHistory) {
+        return true
+      } else {
+        return false
+      }
+    }
   },
   methods: {
     ...mapActions({
@@ -36,8 +40,8 @@ export default {
     })
   },
   mounted () {
-    this.getVestedRecord()
-    this.getUnVestHistory()
+    this.getVestedRecord(this.accountName)
+    this.getUnVestHistory(this.accountName)
   }
 }
 </script>
