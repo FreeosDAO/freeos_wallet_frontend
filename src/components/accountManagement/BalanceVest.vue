@@ -22,7 +22,8 @@ export default {
     ...mapState({
       vestedBalance: state => state.vest.balance,
       unVestHistory: state => state.vest.unVestHistory,
-      accountName: state => state.account.accountName
+      accountName: state => state.account.accountName,
+      iterationNumber: state => state.calendar.currentIteration.iteration_number
     }),
     canUnvest () {
       if (this.vestedBalance !== '0.0000 FREEOS' && !this.unVestHistory) {
@@ -41,7 +42,11 @@ export default {
   },
   mounted () {
     this.getVestedRecord(this.accountName)
-    this.getUnVestHistory(this.accountName)
+    const data = {
+      accountName: this.accountName,
+      iterationNumber: this.iterationNumber
+    }
+    this.getUnVestHistory(data)
   }
 }
 </script>

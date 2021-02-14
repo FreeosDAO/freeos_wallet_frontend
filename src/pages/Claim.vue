@@ -5,7 +5,7 @@
 <!--    </div>-->
     <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) === 1">
       <div class="q-ma-md q-mt-lg">
-        <q-btn :disable="isDisableClaim()" :color="isDisableClaim() ? 'dark' : 'primary'" @click="() => actionClaim(accountInfo.account_name)" no-caps label="Claim FreeOS" />
+        <q-btn :disable="isDisableClaim()" :color="isDisableClaim() ? 'dark' : 'primary'" @click="() => actionClaim(accountName)" no-caps label="Claim FreeOS" />
       </div>
       <div class="q-ma-md" v-if="claimInfo&&claimInfo.respIsUserAlreadyClaimed">
         Next claim will be available in {{getDateDiff()}} days
@@ -48,8 +48,8 @@
 
         <q-card-section>
           <div class="text-h4 text-center" style="color: #5a89a3; font-weight: bolder;">Congratulations!</div>
-          <div class="text-h6 text-center q-mt-lg q-mb-lg">You earned <b style="color: #41aad6">{{claimInfo.claimCalendar && claimInfo.claimCalendar.claim_amount}} FREEOS</b></div>
-          <div class="text-center">Come back next week to earn <b>{{claimInfo.nextCalendar && claimInfo.nextCalendar.claim_amount}} FREEOS</b></div>
+          <div class="text-h6 text-center q-mt-lg q-mb-lg">You earned <b style="color: #41aad6">{{currentIteration && currentIteration.claim_amount}} FREEOS</b></div>
+          <div class="text-center" v-if="nextCalendar">Come back next week to earn <b>{{nextCalendar.claim_amount}} FREEOS</b></div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -69,7 +69,9 @@ export default {
   },
   computed: {
     ...mapState({
-      accountName: state => state.account.accountName
+      accountName: state => state.account.accountName,
+      currentIteration: state => state.calendar.currentIteration,
+      nextCalendar: state => state.calendar.nextCalendar
     }),
     ...mapGetters('account', ['claimInfo']),
     ...mapGetters('claim', ['isClaimed', 'userAfterBalance', 'userPreviousBalance'])
@@ -78,20 +80,20 @@ export default {
     ...mapActions('account', ['getAccountInfo']),
     ...mapActions('claim', ['actionClaim']),
     getDateDiff () {
-      const endDate = new Date(this.claimInfo.claimCalendar.end * 1000)
-      const startDate = new Date()
-      return Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24))
+      const endDate = new Date(this.currentIteration.end_date).getTime()
+      const startDate = new Date().getTime()
+      return parseInt((endDate - startDate) / (1000 * 60 * 60 * 24))
     },
     isMasterSwitchOpen () {
       return Number(this.claimInfo.respMasterSwitch.value) === 1
     },
     isDisableClaim () {
       // For it to to in a valid claim week. i.e. NOT week 0
-      if (this.claimInfo.claimCalendar.iteration_number === 0) {
+      if (this.currentIteration.iteration_number === 0) {
         return true
       }
       // if week 1, stake_requirement can be 0
-      if (this.claimInfo.claimCalendar.iteration_number === 1 && this.isMasterSwitchOpen()) {
+      if (this.currentIteration.iteration_number === 1 && this.isMasterSwitchOpen()) {
         return false
       }
       // 2. For the user to have staked. i.e. their 'stake' field in the user record is equal to the 'stake_requirement' field.
@@ -119,7 +121,7 @@ export default {
       if (!this.isDisableClaim()) {
         return false
       }
-      if (this.claimInfo.claimCalendar.iteration_number !== 0 && this.isMasterSwitchOpen() && !this.hasUserStaked()) {
+      if (this.currentIteration.iteration_number !== 0 && this.isMasterSwitchOpen() && !this.hasUserStaked()) {
         return true
       }
       return false
@@ -139,7 +141,7 @@ export default {
       immediate: true,
       handler: function (val) {
         if (val) {
-          if (this.userPreviousBalance + this.claimInfo.claimCalendar?.claim_amount === this.userAfterBalance) {
+          if (this.userPreviousBalance + this.currentIteration?.claim_amount === this.userAfterBalance) {
             this.isShowSuccessDialog = true
             this.getAccountInfo(this.accountName)
           }

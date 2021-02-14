@@ -12,9 +12,6 @@ export default () => ({
     freeosInAccount: {
       balance: ''
     },
-    claimCalendar: {
-      end_date: ''
-    },
     freeosHoldingRequire: {
       tokens_required: 0
     },
@@ -22,7 +19,6 @@ export default () => ({
     respFreeosRecord: '',
     respStakeRequirement: '',
     respIsUserAlreadyClaimed: '',
-    nextCalendar: '',
     respAirKey: ''
   }
 })

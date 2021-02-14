@@ -70,7 +70,6 @@ export function getAccountInfo (state) {
   state.dispatch('getUserStakedInfo')
   state.dispatch('getFreeosInfo')
   state.dispatch('getRespMasterSwitch')
-  state.dispatch('getClaimDetailInfo')
 }
 
 export async function GetFreeosRecord (state) {
@@ -184,65 +183,33 @@ export async function getRespMasterSwitch (state, acccountName) {
   state.commit('setClaimAttributeVal', val)
 }
 
-export async function getClaimCalendar (state) {
-  const result = await connect({
-    json: true,
-    code: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
-    scope: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
-    table: 'iterations',
-    limit: 26
-  })
+export async function getClaimDetailInfo (state, iterationNumber) {
+  // const calendarAndRequireRow = state.dispatch('getClaimCalendar')
 
-  const currentDate = Math.floor((new Date()).getTime() / 1000)
-  let calendarAndRequireRow = null
-  let nextCalendar = null
-  if (result.rows && result.rows.length) {
-    result.rows.map((row, index) => {
-      const iStartDate = row.start
-      const iEndDate = row.end
-      if (currentDate > iStartDate && currentDate < iEndDate) {
-        calendarAndRequireRow = row
-        nextCalendar = result.rows[index + 1]
-      }
-    })
-  }
+  // const claimCalendarVal = {
+  //   key: 'claimCalendar',
+  //   value: calendarAndRequireRow ?? {
+  //     iteration_number: 0
+  //   }
+  // }
+  // state.commit('setClaimAttributeVal', claimCalendarVal)
 
-  const val = {
-    key: 'nextCalendar',
-    value: nextCalendar
-  }
-  state.commit('setClaimAttributeVal', val)
-
-  return calendarAndRequireRow
-}
-
-export async function getClaimDetailInfo (state) {
-  const calendarAndRequireRow = state.dispatch('getClaimCalendar')
-
-  const claimCalendarVal = {
-    key: 'claimCalendar',
-    value: calendarAndRequireRow ?? {
-      iteration_number: 0
-    }
-  }
-  state.commit('setClaimAttributeVal', claimCalendarVal)
-
-  const freeosHoldingRequireVal = {
-    key: 'freeosHoldingRequire',
-    value: calendarAndRequireRow ?? {
-      iteration_number: 0
-    }
-  }
-  state.commit('setClaimAttributeVal', freeosHoldingRequireVal)
+  // const freeosHoldingRequireVal = {
+  //   key: 'freeosHoldingRequire',
+  //   value: calendarAndRequireRow ?? {
+  //     iteration_number: 0
+  //   }
+  // }
+  // state.commit('setClaimAttributeVal', freeosHoldingRequireVal)
 
   let respIsUserAlreadyClaimed = null
-  if (calendarAndRequireRow && calendarAndRequireRow.iteration_number) {
+  if (iterationNumber) {
     respIsUserAlreadyClaimed = await connect({
       json: true,
       code: process.env.AIRCLAIM_CONTRACT,
       scope: state.state.accountName,
       table: 'claims',
-      lower_bound: calendarAndRequireRow.iteration_number,
+      lower_bound: iterationNumber,
       limit: 1
     })
   }
