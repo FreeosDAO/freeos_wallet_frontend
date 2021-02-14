@@ -8,7 +8,7 @@
         label="Unvest"
         color="primary"
         no-caps
-        @click="unvest()"
+        @click="unvest(accountName)"
         :disable="!canUnvest"
       />
     </div>
@@ -25,7 +25,7 @@ export default {
       accountName: state => state.account.accountName
     }),
     canUnvest () {
-      if (this.vestedBalance && !this.unVestHistory) {
+      if (this.vestedBalance !== '0.0000 FREEOS' && !this.unVestHistory) {
         return true
       } else {
         return false

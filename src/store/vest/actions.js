@@ -18,14 +18,14 @@ export async function getUnVestHistory (state, accountName) {
     code: process.env.AIRCLAIM_CONTRACT,
     scope: accountName,
     table: 'unvests',
-    limit: 1
+    limit: 1,
+    lower_bound: 1
   })
   state.commit('SET_UNVEST_HISTORY', result.rows)
 }
 
-export async function unVest (state) {
+export async function unVest (state, accountName) {
   try {
-    const accountName = this.$transit.wallet.auth.accountName
     const result = await this.$transit.eosApi.transact({
       actions: [{
         account: process.env.AIRCLAIM_CONTRACT, // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
@@ -44,11 +44,10 @@ export async function unVest (state) {
       expireSeconds: 30
     })
 
-    console.log(result)
-
     if (result.processed.receipt.status === 'executed') {
+      const response = result.processed.action_traces[0].console
       Notify.create({
-        message: 'Unvest action successfully',
+        message: response,
         color: 'positive'
       })
       state.dispatch('getVestedRecord', accountName)
