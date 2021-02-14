@@ -87,11 +87,11 @@ export default {
     },
     isDisableClaim () {
       // For it to to in a valid claim week. i.e. NOT week 0
-      if (this.claimInfo.claimCalendar.week_number === 0) {
+      if (this.claimInfo.claimCalendar.iteration_number === 0) {
         return true
       }
       // if week 1, stake_requirement can be 0
-      if (this.claimInfo.claimCalendar.week_number === 1 && this.isMasterSwitchOpen()) {
+      if (this.claimInfo.claimCalendar.iteration_number === 1 && this.isMasterSwitchOpen()) {
         return false
       }
       // 2. For the user to have staked. i.e. their 'stake' field in the user record is equal to the 'stake_requirement' field.
@@ -119,7 +119,7 @@ export default {
       if (!this.isDisableClaim()) {
         return false
       }
-      if (this.claimInfo.claimCalendar.week_number !== 0 && this.isMasterSwitchOpen() && !this.hasUserStaked()) {
+      if (this.claimInfo.claimCalendar.iteration_number !== 0 && this.isMasterSwitchOpen() && !this.hasUserStaked()) {
         return true
       }
       return false
