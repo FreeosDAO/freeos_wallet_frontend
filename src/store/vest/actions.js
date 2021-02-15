@@ -12,14 +12,15 @@ export async function getVestedRecord (state, accountName) {
   state.commit('SET_BALANCE', result.rows[0])
 }
 
-export async function getUnVestHistory (state, accountName) {
+export async function getUnVestHistory (state, data) {
+  const { accountName, iterationNumber } = data
   const result = await connect({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
     scope: accountName,
     table: 'unvests',
     limit: 1,
-    lower_bound: 1
+    lower_bound: iterationNumber
   })
   state.commit('SET_UNVEST_HISTORY', result.rows)
 }

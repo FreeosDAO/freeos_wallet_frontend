@@ -108,7 +108,8 @@ export default {
   },
   computed: {
     ...mapState({
-      accountName: state => state.account.accountName
+      accountName: state => state.account.accountName,
+      iterationNumber: state => state.calendar.currentIteration.iteration_number
     }),
     ...mapGetters('account', ['isAuthenticated', 'connecting'])
   },
@@ -127,7 +128,8 @@ export default {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
     },
-    ...mapActions('account', ['connectWallet', 'logout', 'getAccountInfo'])
+    ...mapActions('account', ['connectWallet', 'logout', 'getAccountInfo', 'getClaimDetailInfo']),
+    ...mapActions('calendar', ['getClaimCalendar'])
   },
   watch: {
     isAuthenticated: {
@@ -135,12 +137,16 @@ export default {
       handler: function (val) {
         if (val && this.accountName) {
           this.getAccountInfo()
+          this.getClaimDetailInfo(this.iterationNumber)
         }
         if (val && this.$route.query.returnUrl) {
           this.$router.push({ path: this.$route.query.returnUrl })
         }
       }
     }
+  },
+  created () {
+    this.getClaimCalendar()
   }
 }
 </script>

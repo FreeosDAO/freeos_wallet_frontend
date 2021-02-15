@@ -7,6 +7,7 @@ import stake from './stake'
 import unstake from './unstake'
 import transfer from './transfer'
 import vest from './vest'
+import calendar from './calendar'
 Vue.use(Vuex)
 
 /*
@@ -26,7 +27,8 @@ export default function (/* { ssrContext } */) {
       stake,
       unstake,
       transfer,
-      vest
+      vest,
+      calendar
     },
 
     // enable strict mode (adds overhead!)
