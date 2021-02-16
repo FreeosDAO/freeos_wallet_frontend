@@ -16,6 +16,7 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { getAbsoluteAmount } from '@/utils/currency'
 
 export default {
   computed: {
@@ -29,14 +30,7 @@ export default {
       this.getAccountInfo()
     },
     isMeetStakeMinRequirment () {
-      return this.getAbsoluteAmount(this.claimInfo.liquidInAccount.balance) >= this.getAbsoluteAmount(this.claimInfo.respStakeRequirement.default_stake)
-    },
-    getAbsoluteAmount (balance) {
-      if (!balance) {
-        return 0
-      }
-      const amount = balance.split(' ')[0]
-      return parseFloat(amount)
+      return getAbsoluteAmount(this.claimInfo.liquidInAccount.balance) >= getAbsoluteAmount(this.claimInfo.respStakeRequirement.default_stake)
     }
   }
 }

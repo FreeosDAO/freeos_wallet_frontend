@@ -19,7 +19,7 @@ import UnstakeCard from 'components/stake/Unstake'
 import UnstakingDialog from 'components/stake/UnstakingDialog'
 import UnstakeStatus from 'components/stake/UnstakeStatus'
 import { mapGetters } from 'vuex'
-// import { getAbsoluteAmount } from '@/utils/currency'
+import { getAbsoluteAmount } from '@/utils/currency'
 export default {
   name: 'StakeAndUnstake',
   data () {
@@ -58,25 +58,18 @@ export default {
       }
     },
     userCanStake () {
-      if (this.getAbsoluteAmount(this.claimInfo.liquidInAccount.balance) > 0) {
+      if (getAbsoluteAmount(this.claimInfo.liquidInAccount.balance) > 0) {
         return true
       } else {
         return false
       }
     },
     userCanUnstake () {
-      if (this.getAbsoluteAmount(this.claimInfo.eosStaked.stake) > 0) {
+      if (getAbsoluteAmount(this.claimInfo.eosStaked.stake) > 0) {
         return true
       } else {
         return false
       }
-    },
-    getAbsoluteAmount (balance) {
-      if (!balance) {
-        return 0
-      }
-      const amount = balance.split(' ')[0]
-      return parseFloat(amount)
     }
   }
 }

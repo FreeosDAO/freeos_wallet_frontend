@@ -22,21 +22,12 @@
             <div style="max-width: 500px; margin: 0 auto;">
               <div style="align-items: center;" class="row justify-center q-mb-md q-pl-md q-pr-md q-ml-md q-mr-md q-pb-xs">
                 <div class="col-xs-5 col-sm-4 text-right">
-                  From account
-                </div>
-                <div class="col-xs-1 col-sm-2"></div>
-                <div class="col-xs-6 col-sm-6">
-                  <q-select dense outlined v-model="fromAccountSelectModel" :options="fromAccountSelectOptions" label="" />
-                </div>
-              </div>
-              <div style="align-items: center;" class="row justify-center q-mb-md q-pl-md q-pr-md q-ml-md q-mr-md q-pb-xs">
-                <div class="col-xs-5 col-sm-4 text-right">
                   To account
                 </div>
                 <div class="col-xs-1 col-sm-2"></div>
                 <div class="col-xs-6 col-sm-6">
                   <q-input
-                    v-model="toAccountModel"
+                    v-model="submitData.toAccountName"
                     type="text"
                     outlined
                     dense
@@ -49,7 +40,7 @@
                 </div>
                 <div class="col-xs-1 col-sm-2"></div>
                 <div class="col-xs-6 col-sm-6">
-                  <q-select dense outlined v-model="tokensSelectModel" :options="tokensSelectOptions" label="" />
+                  <q-select dense outlined v-model="submitData.tokenType" :options="tokensSelectOptions" label="" />
                 </div>
               </div>
               <div style="align-items: center;" class="row justify-center q-mb-md q-pl-md q-pr-md q-ml-md q-mr-md q-pb-xs">
@@ -59,8 +50,8 @@
                 <div class="col-xs-1 col-sm-2"></div>
                 <div class="col-xs-6 col-sm-6">
                   <q-input
-                    v-model="amountModel"
-                    type="text"
+                    v-model="submitData.sendAmount"
+                    type="number"
                     outlined
                     dense
                   />
@@ -73,7 +64,7 @@
                 <div class="col-xs-1 col-sm-2"></div>
                 <div class="col-xs-6 col-sm-6">
                   <q-input
-                    v-model="memoModel"
+                    v-model="submitData.memo"
                     type="text"
                     outlined
                     dense
@@ -82,11 +73,11 @@
               </div>
             </div>
             <div class="flex justify-center">
-              <q-btn class="q-ma-lg" color="primary" no-caps @click="isShowApprovedDialog=true" label="Continue (test for success)" />
+              <q-btn class="q-ma-lg" color="positive" no-caps @click="submit()" label="Send" />
             </div>
-            <div class="flex justify-center">
+            <!-- <div class="flex justify-center">
               <q-btn class="q-ma-lg" color="primary" no-caps @click="isShowFailedDialog=true" label="Continue (test for failing)" />
-            </div>
+            </div> -->
           </q-tab-panel>
 
           <q-tab-panel name="scanQRCode">
@@ -100,7 +91,7 @@
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
-      <q-dialog v-model="isShowApprovedDialog">
+      <!-- <q-dialog v-model="isShowApprovedDialog">
         <q-card>
           <q-card-section>
             <div class="text-center">
@@ -166,31 +157,62 @@
             <q-btn flat label="OK" color="primary" v-close-popup />
           </q-card-actions>
         </q-card>
-      </q-dialog>
+      </q-dialog> -->
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
+import { getAbsoluteAmount } from '@/utils/currency'
+
 export default {
   name: 'Transfer',
   data () {
     return {
       tab: 'send',
-      fromAccountSelectModel: null,
-      fromAccountSelectOptions: ['DAPP', 'EOS'],
-      tokensSelectModel: null,
-      tokensSelectOptions: ['FREEOS', 'EOS'],
-      toAccountModel: null,
-      amountModel: null,
-      memoModel: null,
+      submitData: {
+        toAccountName: null,
+        tokenType: null,
+        sendAmount: null,
+        memo: null
+      },
       isShowApprovedDialog: false,
       isShowFailedDialog: false
     }
   },
+  computed: {
+    ...mapState({
+      accountName: state => state.account.accountName,
+      liquidBalance: state => state.account.claimInfo.liquidInAccount.balance
+    }),
+    tokensSelectOptions () {
+      const types = ['FREEOS']
+      if (getAbsoluteAmount(this.liquidBalance) > 0) {
+        types.push('XPR')
+      }
+      return types
+    }
+  },
   methods: {
-    ...mapActions('transfer', ['sendTokens'])
+    ...mapActions('transfer', ['transferTokens']),
+    ...mapActions('account', ['getAccountInfo']),
+    submit () {
+      const self = this
+      this.transferTokens(this.submitData)
+        .then(response => {
+          self.getAccountInfo()
+          self.resetForm()
+        })
+    },
+    resetForm () {
+      this.submitData = {
+        toAccountName: null,
+        tokenType: null,
+        sendAmount: null,
+        memo: null
+      }
+    }
   }
 }
 </script>
