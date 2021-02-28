@@ -1,6 +1,9 @@
 import notifyAlert from 'src/services/notify-alert'
-import { RpcError } from 'eosjs'
+// import { RpcError } from 'eosjs'
 import { connect } from 'src/utils/smartContractRequest'
+
+import ProtonSDK from '../../utils/proton'
+
 export const actionClaim = async function ({ commit }, accountName) {
   const resp3 = await connect({
     json: true,
@@ -14,17 +17,17 @@ export const actionClaim = async function ({ commit }, accountName) {
   const userPreviousBalance = (resp3.rows[0] && parseFloat(resp3.rows[0].balance)) || 0
   commit('setUserPreviousBalance', userPreviousBalance)
   try {
-    const result = await this.$transit.eosApi.transact({
+    const result = await ProtonSDK.sendTransaction({
       actions: [{
         account: process.env.AIRCLAIM_CONTRACT, // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
         name: 'claim', // name of the action to call
         authorization: [{
-          actor: this.$transit.wallet.auth.accountName, // the claim action is called on behalf of the user
+          actor: global.accountName, // the claim action is called on behalf of the user
           permission: 'active' // name of permission, e.g. this and the line above are the equivalent of  -p yvetecoleman@active
         }],
         data: {
           // Kenneth: only the following parameters required for claim action
-          user: this.$transit.wallet.auth.accountName // account name = yvetecoleman
+          user: global.accountName // account name = yvetecoleman
         }
       }]
     }, {
@@ -58,8 +61,8 @@ export const actionClaim = async function ({ commit }, accountName) {
       notifyAlert('err', e.message.split('assertion failure with message: ')[1])
     } else if (e.message === 'unrecognized private key type') {
       notifyAlert('err', 'There is a problem with your private key. Please check your wallet has the correct key(s)')
-    } else if (e instanceof RpcError || e instanceof TypeError) {
-      notifyAlert('err', 'Connection error. Please try later') // Notify in red
+    // } else if (e instanceof RpcError || e instanceof TypeError) {
+    //   notifyAlert('err', 'Connection error. Please try later') // Notify in red
     } else {
       notifyAlert('err', 'The action could not be completed. Please try later')
     }

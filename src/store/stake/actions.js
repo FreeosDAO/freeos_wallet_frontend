@@ -1,8 +1,9 @@
 import notifyAlert from 'src/services/notify-alert'
 import { connect } from 'src/utils/smartContractRequest'
 import { RpcError } from 'eosjs'
+import ProtonSDK from '../../utils/proton'
 
-export const actionStake = async function ({ state }) {
+export const actionStake = async function ({ state, accountName }) {
   try {
     const userRecord = await connect({
       json: true,
@@ -17,25 +18,18 @@ export const actionStake = async function ({ state }) {
       account: 'eosio.token',
       name: 'transfer',
       authorization: [{
-        actor: this.$transit.wallet.auth.accountName,
+        actor: accountName,
         permission: this.$transit.wallet.auth.permission
       }],
       data: {
-        from: this.$transit.wallet.auth.accountName,
+        from: accountName,
         to: process.env.AIRCLAIM_CONTRACT,
         quantity,
         memo: 'freeos stake'
       }
     }]
 
-    console.log(actions)
-    const result = await this.$transit.eosApi.transact({
-      actions
-    }, {
-      blocksBehind: 3,
-      expireSeconds: 30
-    })
-    console.log(result)
+    const result = ProtonSDK.sendTransaction(actions)
 
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console + 'success')

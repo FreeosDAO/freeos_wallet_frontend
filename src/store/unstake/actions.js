@@ -1,18 +1,18 @@
 import notifyAlert from 'src/services/notify-alert'
 import { RpcError } from 'eosjs'
 
-export const actionUnstake = async function ({ state }) {
+export const actionUnstake = async function ({ state, accountName }) {
   try {
     const result = await this.$transit.eosApi.transact({
       actions: [{
         account: process.env.AIRCLAIM_CONTRACT,
         name: 'unstake',
         authorization: [{
-          actor: this.$transit.wallet.auth.accountName,
+          actor: accountName,
           permission: this.$transit.wallet.auth.permission
         }],
         data: {
-          user: this.$transit.wallet.auth.accountName
+          user: accountName
         }
       }]
     }, {

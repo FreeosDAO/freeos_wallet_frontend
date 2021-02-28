@@ -20,6 +20,8 @@ export async function getClaimCalendar (state) {
         state.commit('SET_CURRENT_CALENDAR', result.rows[index])
         if (result.rows[index + 1]) {
           nextCalendar = result.rows[index + 1]
+        } else {
+          nextCalendar = null
         }
       }
     })

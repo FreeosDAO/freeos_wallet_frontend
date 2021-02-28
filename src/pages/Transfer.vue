@@ -199,6 +199,7 @@ export default {
     ...mapActions('account', ['getAccountInfo']),
     submit () {
       const self = this
+      this.submitData.fromAccountName = this.accountName
       this.transferTokens(this.submitData)
         .then(response => {
           self.getAccountInfo()

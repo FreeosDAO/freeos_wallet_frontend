@@ -1,5 +1,6 @@
 import { connect } from 'src/utils/smartContractRequest'
 import { Notify } from 'quasar'
+import ProtonSDK from '../../utils/proton'
 
 export async function getVestedRecord (state, accountName) {
   const config = {
@@ -27,23 +28,19 @@ export async function getUnVestHistory (state, data) {
 
 export async function unVest (state, accountName) {
   try {
-    const result = await this.$transit.eosApi.transact({
-      actions: [{
-        account: process.env.AIRCLAIM_CONTRACT, // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
-        name: 'unvest', // name of the action to call
-        authorization: [{
-          actor: accountName, // the claim action is called on behalf of the user
-          permission: 'active' // name of permission, e.g. this and the line above are the equivalent of  -p yvetecoleman@active
-        }],
-        data: {
-          // Kenneth: only the following parameters required for claim action
-          user: accountName // account name = yvetecoleman
-        }
-      }]
-    }, {
-      blocksBehind: 3,
-      expireSeconds: 30
-    })
+    const actions = [{
+      account: process.env.AIRCLAIM_CONTRACT, // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
+      name: 'unvest', // name of the action to call
+      authorization: [{
+        actor: accountName, // the claim action is called on behalf of the user
+        permission: 'active' // name of permission, e.g. this and the line above are the equivalent of  -p yvetecoleman@active
+      }],
+      data: {
+        // Kenneth: only the following parameters required for claim action
+        user: accountName // account name = yvetecoleman
+      }
+    }]
+    const result = await ProtonSDK.sendTransaction(actions)
 
     if (result.processed.receipt.status === 'executed') {
       const response = result.processed.action_traces[0].console

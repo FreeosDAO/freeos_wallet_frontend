@@ -128,7 +128,7 @@ export default {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
     },
-    ...mapActions('account', ['connectWallet', 'logout', 'getAccountInfo', 'getClaimDetailInfo']),
+    ...mapActions('account', ['checkIfLoggedIn', 'connectWallet', 'logout', 'getAccountInfo', 'getClaimDetailInfo']),
     ...mapActions('calendar', ['getClaimCalendar'])
   },
   watch: {
@@ -147,6 +147,7 @@ export default {
   },
   created () {
     this.getClaimCalendar()
+    this.checkIfLoggedIn()
   }
 }
 </script>
