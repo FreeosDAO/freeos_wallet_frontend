@@ -22,11 +22,12 @@ export default {
     ...mapState({
       vestedBalance: state => state.vest.balance,
       unVestHistory: state => state.vest.unVestHistory,
+      unVestPercentage: state => state.vest.unVestPercentage,
       accountName: state => state.account.accountName,
       iterationNumber: state => state.calendar.currentIteration.iteration_number
     }),
     canUnvest () {
-      if (this.vestedBalance !== '0.0000 FREEOS' && !this.unVestHistory) {
+      if (this.vestedBalance !== '0.0000 FREEOS' && !this.unVestHistory && this.unVestPercentage > 0) {
         return true
       } else {
         return false
@@ -37,7 +38,8 @@ export default {
     ...mapActions({
       unvest: 'vest/unVest',
       getVestedRecord: 'vest/getVestedRecord',
-      getUnVestHistory: 'vest/getUnVestHistory'
+      getUnVestHistory: 'vest/getUnVestHistory',
+      getUnvestPercentage: 'vest/getUnvestPercentage'
     })
   },
   mounted () {
@@ -47,6 +49,7 @@ export default {
       iterationNumber: this.iterationNumber
     }
     this.getUnVestHistory(data)
+    this.getUnvestPercentage(this.accountName)
   }
 }
 </script>
