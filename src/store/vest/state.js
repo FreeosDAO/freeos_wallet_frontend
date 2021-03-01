@@ -1,4 +1,5 @@
 export default {
   balance: 0,
-  unVestHistory: null
+  unVestHistory: null,
+  unVestPercentage: 0
 }

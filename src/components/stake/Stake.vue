@@ -15,18 +15,21 @@
   </div>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 import { getAbsoluteAmount } from '@/utils/currency'
 
 export default {
   computed: {
+    ...mapState({
+      accountName: state => state.account.accountName
+    }),
     ...mapGetters('account', ['claimInfo'])
   },
   methods: {
     ...mapActions('stake', ['actionStake']),
     ...mapActions('account', ['getAccountInfo']),
     async onStake () {
-      await this.actionStake()
+      await this.actionStake(this.accountName)
       this.getAccountInfo()
     },
     isMeetStakeMinRequirment () {

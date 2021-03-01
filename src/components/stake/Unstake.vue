@@ -17,10 +17,13 @@
   </q-card>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   computed: {
+    ...mapState({
+      accountName: state => state.account.accountName
+    }),
     ...mapGetters('account', ['claimInfo']),
     stakedAmount () {
       return this.claimInfo.eosStaked.stake
@@ -30,7 +33,7 @@ export default {
     ...mapActions('unstake', ['actionUnstake']),
     ...mapActions('account', ['getAccountInfo']),
     async onUnstake () {
-      await this.actionUnstake()
+      await this.actionUnstake(this.accountName)
       this.getAccountInfo()
     }
   }

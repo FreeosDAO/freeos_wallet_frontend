@@ -13,3 +13,11 @@ export function SET_UNVEST_HISTORY (state, result) {
     state.unVestHistory = result
   }
 }
+
+export function SET_UNVEST_PRECENTAGE (state, result) {
+  if (result.length === 0) {
+    state.unVestPercentage = 0
+  } else {
+    state.unVestPercentage = result
+  }
+}

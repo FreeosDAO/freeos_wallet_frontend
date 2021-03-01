@@ -1,12 +1,23 @@
 import notifyAlert from 'src/services/notify-alert'
 import { connect } from 'src/utils/smartContractRequest'
+import ProtonSDK from '../../utils/proton'
+
+export async function checkIfLoggedIn (state) {
+  const { auth } = await ProtonSDK.restoreSession()
+  if (auth && auth.actor && auth.permission) {
+    state.commit('setAccount', {
+      accountName: auth.actor,
+      walletId: ProtonSDK.link.walletType
+    })
+  }
+}
 
 export function connectWallet (state, name) {
-  if (name === 'scatter') {
-    state.dispatch('connectScatter', 'scatter')
-  } else if (name === 'anchor') {
-    state.dispatch('connectProton')
-  }
+  // if (name === 'scatter') {
+  //   state.dispatch('connectScatter', 'scatter')
+  // } else if (name === 'anchor') {
+  state.dispatch('connectProton', name)
+  // }
 }
 
 /**
@@ -54,10 +65,26 @@ export const connectScatter = async function ({ commit }, walletId) {
   this.$transit.eosApi = wallet.eosApi
 }
 
+export async function connectProton (state, name) {
+  try {
+    // this.setState({ isLoggingIn: true })
+    const { auth } = await ProtonSDK.login()
+    if (auth && auth.actor && auth.permission) {
+      state.commit('setAccount', {
+        accountName: auth.actor,
+        walletId: ProtonSDK.link.walletType
+      })
+      // setLoggedInState(auth.actor, auth.permission, accountData)
+    }
+    // this.setState({ isLoggingIn: false })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export const logout = async function ({ commit }) {
   commit('clearAccount', null)
-  // TODO
-  await this.$transit.wallet.terminate()
+  await ProtonSDK.logout()
 
   // this.$router.push('/')
 }
@@ -226,50 +253,4 @@ export const setpath = function ({ commit }, pathe) {
   console.log('whatever', pathe)
   commit('setPath', pathe)
   // this.$router.push('/')
-}
-
-import { ConnectWallet } from '@protonprotocol/proton-web-sdk'
-const endpoints = ['https://api-testnet-proton.eosarabia.net']
-const selectorOptions = {
-  appName: 'Freeos', /* Optional: Name to show in modal, Default 'app' */
-  appLogo: '', /* Optional: Logo to show in modal */
-  customStyleOptions: { /* Optional: Custom style options for modal */
-    modalBackgroundColor: '#F4F7FA',
-    logoBackgroundColor: 'white',
-    isLogoRound: true,
-    optionBackgroundColor: 'white',
-    optionFontColor: 'black',
-    primaryFontColor: 'black',
-    secondaryFontColor: '#6B727F',
-    linkColor: '#752EEB'
-  }
-  // walletType: 'proton' /* Optional: Connect to only specified wallet (e.g. 'proton', 'anchor') */
-}
-export async function connectProton (state) {
-  // const result = await ConnectWallet({
-  //   linkOptions: {
-  //     endpoints
-  //     // rpc: rpc /* Optional: if you wish to provide rpc directly instead of endpoints */
-  //   },
-  //   transportOptions: {
-  //     requestAccount: '', /* Optional: Your proton account */
-  //     requestStatus: true /* Optional: Display request success and error messages, Default true */
-  //   },
-  //   selectorOptions
-  // })
-  // console.log(result)
-  // // state.commit('setAccount', {
-  // //   account: walletState.accountInfo,
-  // //   walletId
-  // // })
-  // // Login
-  const { link, session } = await ConnectWallet({
-    linkOptions: { chainId: process.env.NETWORK_CHAIN_ID, endpoints: endpoints },
-    transportOptions: { requestAccount: this.requestAccount, backButton: true },
-    selectorOptions: { appName: selectorOptions.appName, appLogo: selectorOptions.appLogo }
-  })
-  state.commit('setAccount', {
-    accountName: session.auth.actor,
-    walletId: link.walletType
-  })
 }
