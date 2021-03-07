@@ -11,7 +11,7 @@
           narrow-indicator
         >
           <q-tab name="send" label="Send" />
-          <q-tab name="scanQRCode" label="Scan QR code" />
+          <!-- <q-tab name="scanQRCode" label="Scan QR code" /> -->
         </q-tabs>
 
         <q-separator />
@@ -73,14 +73,14 @@
               </div>
             </div>
             <div class="flex justify-center">
-              <q-btn class="q-ma-lg" color="positive" no-caps @click="submit()" label="Send" />
+              <q-btn class="q-ma-lg" color="positive" no-caps @click="submit()" label="Send" :disable="!isFormFilled"/>
             </div>
             <!-- <div class="flex justify-center">
               <q-btn class="q-ma-lg" color="primary" no-caps @click="isShowFailedDialog=true" label="Continue (test for failing)" />
             </div> -->
           </q-tab-panel>
 
-          <q-tab-panel name="scanQRCode">
+          <!-- <q-tab-panel name="scanQRCode">
             <div>
               <div class="text-h6 text-center q-ma-lg">Please scan or upload a QR code</div>
               <div class="flex justify-center">
@@ -88,7 +88,7 @@
                 <q-btn class="q-ma-lg" color="primary" no-caps label="Continue" />
               </div>
             </div>
-          </q-tab-panel>
+          </q-tab-panel> -->
         </q-tab-panels>
       </q-card>
       <!-- <q-dialog v-model="isShowApprovedDialog">
@@ -192,6 +192,9 @@ export default {
         types.push('XPR')
       }
       return types
+    },
+    isFormFilled () {
+      return !Object.values(this.submitData).some(x => (x === null || x === ''))
     }
   },
   methods: {
