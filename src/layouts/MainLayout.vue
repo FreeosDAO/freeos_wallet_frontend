@@ -6,22 +6,8 @@
         <q-btn :style="'visibility: ' + (isAuthenticated ? 'visible' : 'hidden')" dense flat round icon="menu" @click="drawer = !drawer" />
         <div style="display: flex; align-items: center;">
           <div v-if="isAuthenticated" style="margin-right: 1rem;">{{accountName}}</div>
-          <q-btn-dropdown color="primary" label="Login" v-if="!isAuthenticated">
-            <q-list>
-              <q-item clickable v-close-popup @click="() => connectWallet('scatter')">
-                <q-item-section>
-                  <q-item-label>Scatter</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-            <q-list>
-              <q-item clickable v-close-popup @click="() => connectWallet('anchor')">
-                <q-item-section>
-                  <q-item-label>Anchor</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <q-btn color="primary" label="Login" v-if="!isAuthenticated" @click="() => connectWallet('anchor')">
+          </q-btn>
           <q-btn v-if="isAuthenticated" style="justify-self: flex-end;" @click="() => logout()">Logout</q-btn>
         </div>
       </q-toolbar>

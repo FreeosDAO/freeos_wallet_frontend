@@ -47,7 +47,11 @@ class ProtonSDK {
     try {
       const result = await this.session.transact(
         { actions: actions },
-        { broadcast: true }
+        {
+          broadcast: true,
+          blocksBehind: 3,
+          expireSeconds: 30
+        }
       )
       return result
     } catch (e) {

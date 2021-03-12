@@ -3,7 +3,26 @@ import { connect } from 'src/utils/smartContractRequest'
 import { RpcError } from 'eosjs'
 import ProtonSDK from '../../utils/proton'
 
-export const actionStake = async function ({ state, accountName }) {
+export async function onRegisterUser ({ state }, accountName) {
+  try {
+    const actions = [{
+      account: process.env.AIRCLAIM_CONTRACT,
+      name: 'reguser',
+      authorization: [{
+        actor: accountName,
+        permission: 'active'
+      }]
+    }]
+    console.log(actions)
+    const result = await ProtonSDK.sendTransaction(actions)
+    console.log(result)
+    return result
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export async function actionStake ({ state }, accountName) {
   try {
     const userRecord = await connect({
       json: true,
@@ -19,7 +38,7 @@ export const actionStake = async function ({ state, accountName }) {
       name: 'transfer',
       authorization: [{
         actor: accountName,
-        permission: this.$transit.wallet.auth.permission
+        permission: 'active'
       }],
       data: {
         from: accountName,
@@ -29,8 +48,7 @@ export const actionStake = async function ({ state, accountName }) {
       }
     }]
 
-    const result = ProtonSDK.sendTransaction(actions)
-
+    const result = await ProtonSDK.sendTransaction(actions)
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console + 'success')
     } else {
