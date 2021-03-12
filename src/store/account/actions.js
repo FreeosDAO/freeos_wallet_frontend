@@ -108,8 +108,9 @@ export async function GetFreeosRecord (state) {
   })
   const val = {
     key: 'respFreeosRecord',
-    value: result.rows[0]
+    value: result.rows[0] || null
   }
+  console.log(val)
   state.commit('setClaimAttributeVal', val)
 }
 
@@ -170,8 +171,8 @@ export async function getUserStakedInfo (state) {
   })
 
   const val = {
-    key: 'eosStaked',
-    value: result.rows[0]
+    key: 'stakedInfo',
+    value: result.rows[0] || null
   }
   state.commit('setClaimAttributeVal', val)
 }

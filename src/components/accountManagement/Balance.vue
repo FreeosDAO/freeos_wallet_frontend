@@ -9,7 +9,7 @@
       <q-separator class="q-mt-sm q-mb-sm" />
       <div class="row">
         <div class="col-5">Staked: </div>
-        <div class="col-5 text-primary text-weight-bold">{{(claimInfo.eosStaked&&claimInfo.eosStaked.stake) || '0'}}</div>
+        <div class="col-5 text-primary text-weight-bold">{{(claimInfo.stakedInfo&&claimInfo.stakedInfo.stake) || '0'}}</div>
       </div>
       <q-separator class="q-mt-sm q-mb-sm" />
       <balance-vest />

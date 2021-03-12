@@ -1,25 +1,22 @@
 import notifyAlert from 'src/services/notify-alert'
 import { RpcError } from 'eosjs'
+import ProtonSDK from '../../utils/proton'
 
-export const actionUnstake = async function ({ state, accountName }) {
+export async function actionUnstake ({ state }, accountName) {
   try {
-    const result = await this.$transit.eosApi.transact({
-      actions: [{
-        account: process.env.AIRCLAIM_CONTRACT,
-        name: 'unstake',
-        authorization: [{
-          actor: accountName,
-          permission: this.$transit.wallet.auth.permission
-        }],
-        data: {
-          user: accountName
-        }
-      }]
-    }, {
-      blocksBehind: 3,
-      expireSeconds: 30
-    })
+    const actions = [{
+      account: process.env.AIRCLAIM_CONTRACT,
+      name: 'unstake',
+      authorization: [{
+        actor: accountName,
+        permission: 'active'
+      }],
+      data: {
+        user: accountName
+      }
+    }]
 
+    const result = await ProtonSDK.sendTransaction(actions)
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console)
     } else {

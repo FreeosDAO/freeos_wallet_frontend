@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{claimInfo.respFreeosRecord}}
     <q-card>
       <q-card-section>
         <div class="text-h5 q-pa-md q-mx-auto" style="width: 70%;">

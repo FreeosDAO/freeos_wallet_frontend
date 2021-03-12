@@ -26,7 +26,7 @@ export default {
     }),
     ...mapGetters('account', ['claimInfo']),
     stakedAmount () {
-      return this.claimInfo.eosStaked.stake
+      return this.claimInfo.stakedInfo.stake
     }
   },
   methods: {

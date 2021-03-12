@@ -6,9 +6,7 @@ export default () => ({
     liquidInAccount: {
       balance: ''
     },
-    eosStaked: {
-      stake: ''
-    },
+    stakedInfo: null,
     freeosInAccount: {
       balance: ''
     },
