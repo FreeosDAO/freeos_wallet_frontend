@@ -1,5 +1,4 @@
 import notifyAlert from 'src/services/notify-alert'
-import { connect } from 'src/utils/smartContractRequest'
 import { RpcError } from 'eosjs'
 import ProtonSDK from '../../utils/proton'
 
@@ -11,28 +10,21 @@ export async function onRegisterUser ({ state }, accountName) {
       authorization: [{
         actor: accountName,
         permission: 'active'
-      }]
+      }],
+      data: {
+        user: accountName
+      }
     }]
-    console.log(actions)
     const result = await ProtonSDK.sendTransaction(actions)
-    console.log(result)
     return result
   } catch (e) {
     console.log(e)
   }
 }
 
-export async function actionStake ({ state }, accountName) {
+export async function actionStake ({ state }, data) {
   try {
-    const userRecord = await connect({
-      json: true,
-      code: process.env.AIRCLAIM_CONTRACT,
-      scope: process.env.AIRCLAIM_CONTRACT,
-      table: 'stake',
-      limit: 1
-    })
-    const quantity = userRecord.rows[0].stake_requirement ? userRecord.rows[0].stake_requirement : userRecord.rows[0].default_stake
-
+    const { amount, accountName } = data
     const actions = [{
       account: 'eosio.token',
       name: 'transfer',
@@ -43,7 +35,7 @@ export async function actionStake ({ state }, accountName) {
       data: {
         from: accountName,
         to: process.env.AIRCLAIM_CONTRACT,
-        quantity,
+        quantity: amount,
         memo: 'freeos stake'
       }
     }]

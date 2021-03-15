@@ -5,23 +5,23 @@
         <q-btn
           color="primary"
           label="register"
-        @click="onRegisterUser(accountName)" />
+        @click="registerUser()" />
         <p><small>(you are not register yet)</small></p>
+      </div>
+      <div class="col-xs-10 col-sm-5 q-mb-lg" v-else-if="!stakedValue">
         <stake-card v-if="userCanStake"/>
       </div>
-      <div class="col-xs-10 col-sm-5 q-mb-lg" v-if="stakedInfo">
+      <div class="col-xs-10 col-sm-5 q-mb-lg" v-else-if="stakedValue">
         <unstake-card />
       </div>
     </div>
     <unstake-status v-if="stakeStatus === 'unStaking' "/>
-    <unstaking-dialog />
   </div>
 </template>
 
 <script>
 import StakeCard from 'components/stake/Stake'
 import UnstakeCard from 'components/stake/Unstake'
-import UnstakingDialog from 'components/stake/UnstakingDialog'
 import UnstakeStatus from 'components/stake/UnstakeStatus'
 import { mapState, mapActions } from 'vuex'
 import { getAbsoluteAmount } from '@/utils/currency'
@@ -35,24 +35,31 @@ export default {
   components: {
     StakeCard,
     UnstakeCard,
-    UnstakeStatus,
-    UnstakingDialog
+    UnstakeStatus
   },
   computed: {
     ...mapState({
       stakedInfo: state => state.account.claimInfo.stakedInfo,
       liquidInAccount: state => state.account.claimInfo.liquidInAccount,
       accountName: state => state.account.accountName
-    })
+    }),
+    stakedValue () {
+      return getAbsoluteAmount(this.stakedInfo.stake) > 0
+    }
   },
   methods: {
     ...mapActions('stake', ['onRegisterUser']),
+    ...mapActions('account', ['getAccountInfo']),
     userCanStake () {
       if (getAbsoluteAmount(this.liquidInAccount.balance) > 0) {
         return true
       } else {
         return false
       }
+    },
+    async registerUser () {
+      await this.onRegisterUser(this.accountName)
+      this.getAccountInfo()
     }
   }
 }
