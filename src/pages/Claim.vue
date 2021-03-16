@@ -1,9 +1,9 @@
 <template>
   <div class="text-center">
-<!--    <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) !== 1">-->
-<!--      <b>Freeos system is not currently operational. Please check back later.</b>-->
-<!--    </div>-->
-    <div v-if="claimInfo&&parseFloat(claimInfo.respMasterSwitch.value) === 1">
+    <div v-if="claimInfo&&!isMasterSwitchOpen">
+      <b>Freeos system is not currently operational. Please check back later.</b>
+    </div>
+    <div v-if="claimInfo&&isMasterSwitchOpen">
       <div class="q-ma-md q-mt-lg">
         <q-btn :disable="isDisableClaim()" :color="isDisableClaim() ? 'dark' : 'primary'" @click="() => actionClaim(accountName)" no-caps label="Claim FreeOS" />
       </div>
@@ -74,7 +74,10 @@ export default {
       nextCalendar: state => state.calendar.nextCalendar
     }),
     ...mapGetters('account', ['claimInfo']),
-    ...mapGetters('claim', ['isClaimed', 'userAfterBalance', 'userPreviousBalance'])
+    ...mapGetters('claim', ['isClaimed', 'userAfterBalance', 'userPreviousBalance']),
+    isMasterSwitchOpen () {
+      return Number(this.claimInfo.respMasterSwitch.value) === 1
+    }
   },
   methods: {
     ...mapActions('account', ['getAccountInfo']),
@@ -84,16 +87,13 @@ export default {
       const startDate = new Date().getTime()
       return parseInt((endDate - startDate) / (1000 * 60 * 60 * 24))
     },
-    isMasterSwitchOpen () {
-      return Number(this.claimInfo.respMasterSwitch.value) === 1
-    },
     isDisableClaim () {
       // For it to to in a valid claim week. i.e. NOT week 0
       if (this.currentIteration.iteration_number === 0) {
         return true
       }
       // if week 1, stake_requirement can be 0
-      if (this.currentIteration.iteration_number === 1 && this.isMasterSwitchOpen()) {
+      if (this.currentIteration.iteration_number === 1 && this.isMasterSwitchOpen) {
         return false
       }
       // 2. For the user to have staked. i.e. their 'stake' field in the user record is equal to the 'stake_requirement' field.
@@ -107,7 +107,7 @@ export default {
           (parseFloat(this.claimInfo.freeosInAccount.balance) > this.claimInfo.freeosHoldingRequire.tokens_required)
         ) {
           // 4. For 'masterswitch' value to be '1'
-          if (this.isMasterSwitchOpen()) {
+          if (this.isMasterSwitchOpen) {
             // 5. They have not already claimed in the current week (see the table read required in the ‘Suggested Coding Activities’ section).
             if (!this.claimInfo.respIsUserAlreadyClaimed) {
               return false
@@ -121,7 +121,7 @@ export default {
       if (!this.isDisableClaim()) {
         return false
       }
-      if (this.currentIteration.iteration_number !== 0 && this.isMasterSwitchOpen() && !this.hasUserStaked()) {
+      if (this.currentIteration.iteration_number !== 0 && this.isMasterSwitchOpen && !this.hasUserStaked()) {
         return true
       }
       return false
