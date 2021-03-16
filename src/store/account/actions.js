@@ -124,7 +124,7 @@ export async function getLiquidInAccount (state) {
   })
   const val = {
     key: 'liquidInAccount',
-    value: result.rows[0]
+    value: result.rows[0] || null
   }
   state.commit('setClaimAttributeVal', val)
 }

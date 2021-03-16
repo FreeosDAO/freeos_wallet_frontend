@@ -11,12 +11,16 @@
         </div>
       </q-card-section>
     </q-card>
-    <p class="text-center q-mt-md">Current Staking Requirement = {{userStakeRequirement}}</p>
+    <p class="text-center q-my-lg text-h6">Current Staking Requirement = {{userStakeRequirement}}</p>
+    <p v-if="!isMeetStakeMinRequirment()" class="text-negative text-bold">You currently do not have enough XPR to stake.</p>
+    <p v-if="!isMeetStakeMinRequirment()">
+      Please <router-link :to="{name: 'transfer'}">tranfer</router-link> an additional {{shortageAmount}} in order to claim.
+    </p>
   </div>
 </template>
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
-import { getAbsoluteAmount } from '@/utils/currency'
+import { getAbsoluteAmount, getCurrency } from '@/utils/currency'
 
 export default {
   computed: {
@@ -45,6 +49,11 @@ export default {
         }
       }
       return requirement
+    },
+    shortageAmount () {
+      const currency = getCurrency(this.claimInfo.liquidInAccount.balance)
+      const amount = getAbsoluteAmount(this.userStakeRequirement) - getAbsoluteAmount(this.claimInfo.liquidInAccount.balance)
+      return `${amount} ${currency}`
     }
   },
   methods: {

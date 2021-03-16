@@ -184,7 +184,7 @@ export default {
   computed: {
     ...mapState({
       accountName: state => state.account.accountName,
-      liquidBalance: state => state.account.claimInfo.liquidInAccount.balance
+      liquidBalance: state => state.account.claimInfo.liquidInAccount ? state.account.claimInfo.liquidInAccount.balance : null
     }),
     tokensSelectOptions () {
       const types = ['FREEOS']
