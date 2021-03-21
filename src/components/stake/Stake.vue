@@ -14,7 +14,7 @@
     <p class="text-center q-my-lg text-h6">Current Staking Requirement = {{userStakeRequirement}} XPR</p>
     <p v-if="!isMeetStakeMinRequirment()" class="text-negative text-bold">You currently do not have enough XPR to stake.</p>
     <p v-if="!isMeetStakeMinRequirment()">
-      Please <router-link :to="{name: 'transfer'}">tranfer</router-link> an additional {{shortageAmount}} in order to claim.
+      Please <router-link :to="{name: 'transfer'}">tranfer</router-link> an additional {{shortageAmount}} in order to stake.
     </p>
   </div>
 </template>

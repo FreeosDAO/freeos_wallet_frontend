@@ -12,12 +12,12 @@
         <div class="col-5 text-primary text-weight-bold">{{(claimInfo.stakedInfo&&claimInfo.stakedInfo.stake) || '0'}}</div>
       </div>
       <q-separator class="q-mt-sm q-mb-sm" />
-      <balance-vest />
       <div class="row">
         <div class="col-5">Liquid FREEOS: </div>
         <div class="col-5 text-primary text-weight-bold">{{claimInfo.freeosInAccount}}</div>
       </div>
       <q-separator class="q-mt-sm q-mb-sm" />
+      <balance-vest />
       <div class="row text-green text-weight-bold">
         <div class="col-5">Total FREEOS: </div>
         <div class="col-5">{{totalFreeos}}</div>
@@ -43,7 +43,7 @@ export default {
     },
     totalFreeos () {
       const amount = getAbsoluteAmount(this.claimInfo.freeosInAccount) + getAbsoluteAmount(this.vestedBalance)
-      return amount + ' FREEOS'
+      return parseFloat(amount).toFixed(4) + ' FREEOS'
     }
   },
   components: {
