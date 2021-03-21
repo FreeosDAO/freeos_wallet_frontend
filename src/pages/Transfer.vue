@@ -194,7 +194,11 @@ export default {
       return types
     },
     isFormFilled () {
-      return !Object.values(this.submitData).some(x => (x === null || x === ''))
+      if (this.submitData.toAccountName && this.submitData.tokenType && this.submitData.sendAmount) {
+        return true
+      } else {
+        return false
+      }
     }
   },
   methods: {

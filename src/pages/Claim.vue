@@ -1,5 +1,12 @@
 <template>
   <div class="text-center">
+    <div class="col-xs-10 col-sm-5 q-mb-lg" v-if="!stakedInfo">
+        <q-btn
+          color="primary"
+          label="register"
+        @click="registerUser()" />
+        <p><small>(you are not register yet)</small></p>
+      </div>
     <div v-if="claimInfo&&!isMasterSwitchOpen">
       <b>Freeos system is not currently operational. Please check back later.</b>
     </div>
@@ -16,16 +23,16 @@
         </template>
       </div>
       <div class="q-mt-lg" v-if="claimInfo&&isDisplayingStakedMessage() && userStakeRequirement">
-        To be able to claim, you need a total of <b>
+        <p>To be able to claim, you need a total of <b>
           {{
             userStakeRequirement
           }}
-        </b> staked on your account.
+        </b> staked on your account.</p>
+        <p>
+          More Information staking/unstaking you can find <router-link :to="{name: 'stake'}" class="text-primary" >here</router-link>.
+        </p>
       </div>
-      <div class="q-mb-md">
-        More Information staking/unstaking you can find <router-link :to="{name: 'stake'}" class="text-primary" >here</router-link>.
-      </div>
-      <div class="q-mt-lg q-mb-lg" v-if="isDisplayingHoldingRequirement()">
+      <div class="q-mt-lg q-mb-lg" v-if="isDisplayingHoldingRequirement() && !isUserHasAirKey">
         To be able to Claim, you need a total of <b>{{currentIteration.tokens_required}} FREEOS</b> in your account. <br>
         Please <span @click="$router.push('/transfer')" class="text-primary" style="text-decoration: underline; cursor: pointer;">transfer</span> an additional
         <b>{{currentIteration.tokens_required - parseFloat(totalFreeos)}} FREEOS</b>
@@ -80,12 +87,17 @@ export default {
       freeosInAccount: state => state.account.claimInfo.freeosInAccount,
       stakedInfo: state => state.account.claimInfo.stakedInfo,
       userCount: state => state.account.claimInfo.statistics.usercount,
-      stakeRequirmentList: state => state.account.claimInfo.stakeRequirmentList
+      stakeRequirmentList: state => state.account.claimInfo.stakeRequirmentList,
+      airKey: state => state.account.claimInfo.respAirKey
     }),
     ...mapGetters('account', ['claimInfo']),
     ...mapGetters('claim', ['isClaimed', 'userAfterBalance', 'userPreviousBalance']),
     isMasterSwitchOpen () {
       return Number(this.claimInfo.respMasterSwitch.value) === 1
+    },
+    isUserHasAirKey () {
+      const amount = getAbsoluteAmount(this.airKey)
+      return amount !== 0
     },
     totalFreeos () {
       const amount = getAbsoluteAmount(this.claimInfo.freeosInAccount) + getAbsoluteAmount(this.vestedBalance)
@@ -120,9 +132,14 @@ export default {
   },
   methods: {
     ...mapActions('account', ['getAccountInfo']),
+    ...mapActions('stake', ['onRegisterUser']),
     ...mapActions('claim', ['actionClaim']),
     async onClaim (accountName) {
       await this.actionClaim(accountName)
+      this.getAccountInfo()
+    },
+    async registerUser () {
+      await this.onRegisterUser(this.accountName)
       this.getAccountInfo()
     },
     getDateDiff () {
@@ -142,9 +159,16 @@ export default {
       if (this.currentIteration.iteration_number === 1 && this.isMasterSwitchOpen) {
         return false
       }
+
       // 2. For the user to have staked. i.e. their 'stake' field in the user record is equal to the 'stake_requirement' field.
       if (!this.hasUserStaked()) {
         return true
+      }
+
+      if (this.isUserHasAirKey) {
+        if (!this.claimInfo.respIsUserAlreadyClaimed) {
+          return false
+        }
       }
       // 3. For the user to have balance of FREEOS >= the holding requirement for the week (go to week record and look at 'tokens_required'
       if (getAbsoluteAmount(this.totalFreeos) >= this.currentIteration.tokens_required) {

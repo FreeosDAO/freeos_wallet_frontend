@@ -171,7 +171,7 @@ export async function getResAirKey (state) {
 
   const val = {
     key: 'respAirKey',
-    value: result.rows[0]
+    value: result.rows.length > 0 ? result.rows[0].balance : null
   }
   state.commit('setClaimAttributeVal', val)
 }

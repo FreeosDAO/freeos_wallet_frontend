@@ -19,8 +19,6 @@ export async function actionUnstake ({ state }, accountName) {
     const result = await ProtonSDK.sendTransaction(actions)
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console)
-    } else {
-      notifyAlert('err', 'The action could not be completed. Please try later')
     }
     return result
   } catch (e) {
