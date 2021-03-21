@@ -5,7 +5,7 @@
     </div>
     <div v-if="claimInfo&&isMasterSwitchOpen">
       <div class="q-ma-md q-mt-lg">
-        <q-btn :disable="isDisableClaim()" :color="isDisableClaim() ? 'dark' : 'primary'" @click="() => actionClaim(accountName)" no-caps label="Claim FreeOS" />
+        <q-btn :disable="isDisableClaim()" :color="isDisableClaim() ? 'dark' : 'primary'" @click="() => onClaim(accountName)" no-caps label="Claim FreeOS" />
       </div>
       <div class="q-ma-md" v-if="claimInfo&&claimInfo.respIsUserAlreadyClaimed">
         <template v-if=" nextCalendar">
@@ -92,6 +92,10 @@ export default {
   methods: {
     ...mapActions('account', ['getAccountInfo']),
     ...mapActions('claim', ['actionClaim']),
+    async onClaim (accountName) {
+      await this.actionClaim(accountName)
+      this.getAccountInfo()
+    },
     getDateDiff () {
       const endDate = new Date(this.currentIteration.end_date).getTime()
       const startDate = new Date().getTime()
