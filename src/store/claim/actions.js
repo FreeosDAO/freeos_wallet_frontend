@@ -29,28 +29,14 @@ export const actionClaim = async function ({ commit }, accountName) {
         user: accountName // account name = yvetecoleman
       }
     }]
-    console.log(actions)
     const result = await ProtonSDK.sendTransaction(actions)
-    console.log(result)
+
     if (result.processed.receipt.status === 'executed') {
-      notifyAlert('success', result.processed.action_traces[0].console) // Kenneth: Notify message in green
-      const resp3After = connect({
-        json: true,
-        code: process.env.AIRCLAIM_CONTRACT,
-        scope: accountName,
-        table: 'accounts',
-        lower_bound: 'FREEOS',
-        limit: 1
-      })
-      const userAfterBalance = (resp3After.rows[0] && parseFloat(resp3After.rows[0].balance)) || 0
-      commit('setUserAfterBalance', userAfterBalance)
+      notifyAlert('success', result.processed.action_traces[0].console)
       commit('setIsClaimed', true)
-    } else {
-      notifyAlert('err', 'The action could not be completed. Please try later') // Kenneth: Notify error in red
     }
     return result
   } catch (e) {
-    console.log(e)
     // notifyAlert('err', 'Other error: ', e.message)
     // Kenneth: All of the following log messages should be replaced with Notify messages in red
     if (e.message === 'UnAuthorized') {

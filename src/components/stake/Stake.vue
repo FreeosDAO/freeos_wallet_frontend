@@ -7,7 +7,7 @@
         </div>
         <p>To be eligible to Claim your weekly FREEOS tokens</p>
         <div class="q-ma-md q-mt-lg">
-          <q-btn color="primary" :disable="!isMeetStakeMinRequirment()" @click="() => onStake()" no-caps label="Stake" />
+          <q-btn  :color="isMeetStakeMinRequirment() ? 'primary' : 'dark'"  :disable="!isMeetStakeMinRequirment()" @click="() => onStake()" no-caps label="Stake" />
         </div>
       </q-card-section>
     </q-card>
