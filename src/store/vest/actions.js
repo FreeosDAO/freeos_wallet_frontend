@@ -27,14 +27,14 @@ export async function getUnVestHistory (state, data) {
 }
 
 export async function getUnvestPercentage (state, accountName) {
-  const result = await connect({
-    json: true,
-    code: process.env.AIRCLAIM_CONTRACT,
-    scope: accountName,
-    table: 'counters',
-    limit: 1
-  })
-  state.commit('SET_UNVEST_PRECENTAGE', result.rows)
+  // const result = await connect({
+  //   json: true,
+  //   code: process.env.AIRCLAIM_CONTRACT,
+  //   scope: accountName,
+  //   table: 'counters',
+  //   limit: 1
+  // })
+  // state.commit('SET_UNVEST_PRECENTAGE', result.rows)
 }
 export async function unVest (state, accountName) {
   try {

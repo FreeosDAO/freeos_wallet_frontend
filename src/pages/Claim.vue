@@ -8,20 +8,24 @@
         <q-btn :disable="isDisableClaim()" :color="isDisableClaim() ? 'dark' : 'primary'" @click="() => actionClaim(accountName)" no-caps label="Claim FreeOS" />
       </div>
       <div class="q-ma-md" v-if="claimInfo&&claimInfo.respIsUserAlreadyClaimed">
-        Next claim will be available in {{getDateDiff()}} days
+        <template v-if=" nextCalendar">
+          Next claim will be available in {{getDateDiff()}} days
+        </template>
+        <template v-else>
+          Airclaim is completed.
+        </template>
       </div>
       <div class="q-ma-md q-mt-lg" v-if="claimInfo&&isDisplayingStakedMessage()">
         To be able to claim you need to have <b>
           {{
-            claimInfo.respFreeosRecord && claimInfo.respFreeosRecord.stake_requirement ||
-            claimInfo.respStakeRequirement.default_stake
+            claimInfo.respFreeosRecord && claimInfo.respFreeosRecord.stake_requirement
           }}
         </b> staked on your account.
       </div>
       <div class="q-mt-lg q-mb-lg" v-if="isDisplayingHoldingRequirement()">
-        To be able to Claim, you need a total of <b>{{claimInfo.freeosHoldingRequire.tokens_required}} FREEOS</b> in your account. <br>
+        To be able to Claim, you need a total of <b>{{currentIteration.tokens_required}} FREEOS</b> in your account. <br>
         Please <span @click="$router.push('/transfer')" class="text-primary" style="text-decoration: underline; cursor: pointer;">transfer</span> an additional
-        <b>{{claimInfo.freeosHoldingRequire.tokens_required - parseFloat(claimInfo.freeosInAccount.balance)}} FREEOS</b>
+        <b>{{currentIteration.tokens_required - parseFloat(totalFreeos)}} FREEOS</b>
         in order to Claim.
       </div>
       <div v-if="claimInfo&&isDisplayingStakedMessage()">
@@ -58,7 +62,7 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
-
+import { getAbsoluteAmount } from '@/utils/currency'
 export default {
   name: 'Claim',
   data () {
@@ -71,12 +75,18 @@ export default {
     ...mapState({
       accountName: state => state.account.accountName,
       currentIteration: state => state.calendar.currentIteration,
-      nextCalendar: state => state.calendar.nextCalendar
+      nextCalendar: state => state.calendar.nextCalendar,
+      vestedBalance: state => state.vest.balance,
+      freeosInAccount: state => state.account.claimInfo.freeosInAccount
     }),
     ...mapGetters('account', ['claimInfo']),
     ...mapGetters('claim', ['isClaimed', 'userAfterBalance', 'userPreviousBalance']),
     isMasterSwitchOpen () {
       return Number(this.claimInfo.respMasterSwitch.value) === 1
+    },
+    totalFreeos () {
+      const amount = getAbsoluteAmount(this.claimInfo.freeosInAccount) + getAbsoluteAmount(this.vestedBalance)
+      return amount + ' FREEOS'
     }
   },
   methods: {
@@ -88,6 +98,9 @@ export default {
       return parseInt((endDate - startDate) / (1000 * 60 * 60 * 24))
     },
     isDisableClaim () {
+      if (!this.isMasterSwitchOpen) {
+        return true
+      }
       // For it to to in a valid claim week. i.e. NOT week 0
       if (this.currentIteration.iteration_number === 0) {
         return true
@@ -97,22 +110,14 @@ export default {
         return false
       }
       // 2. For the user to have staked. i.e. their 'stake' field in the user record is equal to the 'stake_requirement' field.
-      if (
-        this.claimInfo.respFreeosRecord &&
-        (this.claimInfo.respFreeosRecord.stake === this.claimInfo.respFreeosRecord.stake_requirement)
-      ) {
-        // 3. For the user to have balance of FREEOS >= the holding requirement for the week (go to week record and look at 'tokens_required'
-        if (
-          this.claimInfo.freeosInAccount &&
-          (parseFloat(this.claimInfo.freeosInAccount.balance) > this.claimInfo.freeosHoldingRequire.tokens_required)
-        ) {
-          // 4. For 'masterswitch' value to be '1'
-          if (this.isMasterSwitchOpen) {
-            // 5. They have not already claimed in the current week (see the table read required in the ‘Suggested Coding Activities’ section).
-            if (!this.claimInfo.respIsUserAlreadyClaimed) {
-              return false
-            }
-          }
+      if (!this.hasUserStaked()) {
+        return true
+      }
+      // 3. For the user to have balance of FREEOS >= the holding requirement for the week (go to week record and look at 'tokens_required'
+      if (getAbsoluteAmount(this.totalFreeos) >= this.currentIteration.tokens_required) {
+        // 5. They have not already claimed in the current week (see the table read required in the ‘Suggested Coding Activities’ section).
+        if (!this.claimInfo.respIsUserAlreadyClaimed) {
+          return false
         }
       }
       return true
@@ -127,13 +132,21 @@ export default {
       return false
     },
     hasUserStaked () {
-      return !(
-        !this.claimInfo.respFreeosRecord ||
-        (this.claimInfo.respFreeosRecord.stake !== this.claimInfo.respFreeosRecord.stake_requirement)
-      )
+      if (!this.claimInfo.respFreeosRecord) {
+        return false
+      }
+      return this.claimInfo.respFreeosRecord.staked_iteration > 0
+      // return !(
+      //   !this.claimInfo.respFreeosRecord ||
+      //   (this.claimInfo.respFreeosRecord.stake !== this.claimInfo.respFreeosRecord.stake_requirement)
+      // )
     },
     isDisplayingHoldingRequirement () {
-      return this.claimInfo.freeosInAccount && (this.claimInfo.freeosInAccount.balance < this.claimInfo.freeosHoldingRequire.tokens_required)
+      if (!this.currentIteration) {
+        return false
+      }
+      const tokensRequired = this.currentIteration.tokens_required
+      return (getAbsoluteAmount(this.claimInfo.freeosInAccount) < tokensRequired)
     }
   },
   watch: {

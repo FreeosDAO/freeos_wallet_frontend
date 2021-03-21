@@ -92,6 +92,7 @@ export const logout = async function ({ commit }) {
 export function getAccountInfo (state) {
   state.dispatch('GetFreeosRecord')
   state.dispatch('getLiquidInAccount')
+  state.dispatch('getStatistics')
   state.dispatch('getStakeRequirementInfo')
   state.dispatch('getResAirKey')
   state.dispatch('getUserStakedInfo')
@@ -110,14 +111,13 @@ export async function GetFreeosRecord (state) {
     key: 'respFreeosRecord',
     value: result.rows[0] || null
   }
-  console.log(val)
   state.commit('setClaimAttributeVal', val)
 }
 
 export async function getLiquidInAccount (state) {
   const result = await connect({
     json: true,
-    code: 'eosio.token', // account containing smart contract
+    code: process.env.CURRENCY_CONTRACT, // account containing smart contract
     scope: state.state.accountName, // the subset of the table to query
     table: 'accounts', // the name of the table
     limit: -1 // limit on number of rows returned
@@ -129,17 +129,32 @@ export async function getLiquidInAccount (state) {
   state.commit('setClaimAttributeVal', val)
 }
 
-export async function getStakeRequirementInfo (state) {
+export async function getStatistics (state) {
   const result = await connect({
     json: true,
     code: process.env.AIRCLAIM_CONTRACT,
     scope: process.env.AIRCLAIM_CONTRACT,
-    table: 'stakes' // the name of the table
+    table: 'statistics' // the name of the table
   })
 
   const val = {
-    key: 'respStakeRequirement',
+    key: 'statistics',
     value: result.rows[0]
+  }
+  state.commit('setClaimAttributeVal', val)
+}
+
+export async function getStakeRequirementInfo (state) {
+  const result = await connect({
+    json: true,
+    code: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
+    scope: process.env.AIRCLAIM_CONFIGRATION_CONTRACT,
+    table: 'stakereqs' // the name of the table
+  })
+
+  const val = {
+    key: 'stakeRequirmentList',
+    value: result.rows
   }
   state.commit('setClaimAttributeVal', val)
 }
@@ -189,7 +204,7 @@ export async function getFreeosInfo (state) {
 
   const val = {
     key: 'freeosInAccount',
-    value: result.rows[0]
+    value: result.rows[0] ? result.rows[0].balance : 0
   }
   state.commit('setClaimAttributeVal', val)
 }

@@ -6,12 +6,13 @@
       <q-btn
         size="sm"
         label="Unvest"
-        color="primary"
+        :color="!canUnvest ? 'dark' : 'primary'"
         no-caps
         @click="unvest(accountName)"
         :disable="!canUnvest"
       />
     </div>
+    <q-separator class="q-mt-sm q-mb-sm" />
   </div>
 </template>
 <script>

@@ -8,14 +8,13 @@ export default () => ({
     },
     stakedInfo: null,
     freeosInAccount: {
-      balance: ''
     },
     freeosHoldingRequire: {
       tokens_required: 0
     },
     respMasterSwitch: '',
     respFreeosRecord: '',
-    respStakeRequirement: '',
+    stakeRequirmentList: '',
     respIsUserAlreadyClaimed: '',
     respAirKey: ''
   }

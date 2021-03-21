@@ -19,7 +19,7 @@ export async function getClaimCalendar (state) {
 
       if (currentTimeStamp > startTimeStamp && currentTimeStamp < endTimeStamp) {
         state.commit('SET_CURRENT_CALENDAR', result.rows[index])
-        if (result.rows.length === (index + 1)) {
+        if (result.rows.length > (index + 1)) {
           nextCalendar = result.rows[index + 1]
         } else {
           nextCalendar = null
