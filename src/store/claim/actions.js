@@ -17,23 +17,21 @@ export const actionClaim = async function ({ commit }, accountName) {
   const userPreviousBalance = (resp3.rows[0] && parseFloat(resp3.rows[0].balance)) || 0
   commit('setUserPreviousBalance', userPreviousBalance)
   try {
-    const result = await ProtonSDK.sendTransaction({
-      actions: [{
-        account: process.env.AIRCLAIM_CONTRACT, // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
-        name: 'claim', // name of the action to call
-        authorization: [{
-          actor: global.accountName, // the claim action is called on behalf of the user
-          permission: 'active' // name of permission, e.g. this and the line above are the equivalent of  -p yvetecoleman@active
-        }],
-        data: {
-          // Kenneth: only the following parameters required for claim action
-          user: global.accountName // account name = yvetecoleman
-        }
-      }]
-    }, {
-      blocksBehind: 3,
-      expireSeconds: 30
-    })
+    const actions = [{
+      account: process.env.AIRCLAIM_CONTRACT, // the name of the airclaim contract (i'm using freeos333333 as a test account on Kylin)
+      name: 'claim', // name of the action to call
+      authorization: [{
+        actor: accountName, // the claim action is called on behalf of the user
+        permission: 'active' // name of permission, e.g. this and the line above are the equivalent of  -p yvetecoleman@active
+      }],
+      data: {
+        // Kenneth: only the following parameters required for claim action
+        user: accountName // account name = yvetecoleman
+      }
+    }]
+    console.log(actions)
+    const result = await ProtonSDK.sendTransaction(actions)
+    console.log(result)
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console) // Kenneth: Notify message in green
       const resp3After = connect({

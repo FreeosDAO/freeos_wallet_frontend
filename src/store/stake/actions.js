@@ -39,7 +39,6 @@ export async function actionStake ({ state }, data) {
         memo: 'freeos stake'
       }
     }]
-
     const result = await ProtonSDK.sendTransaction(actions)
     if (result.processed.receipt.status === 'executed') {
       notifyAlert('success', result.processed.action_traces[0].console + 'success')

@@ -6,7 +6,7 @@ import { Loading, Notify } from 'quasar'
 
 export function connect (config) {
   return new Promise((resolve, reject) => {
-    showLoading()
+    // showLoading()
     rpc.get_table_rows(config)
       .then((response) => {
         resolve(successHandler(response))

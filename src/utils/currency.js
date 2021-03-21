@@ -1,5 +1,5 @@
 export function getAbsoluteAmount (balance) {
-  if (!balance) {
+  if (!balance || typeof (balance) === 'object') {
     return 0
   }
   const amount = balance.split(' ')[0]
