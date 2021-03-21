@@ -15,21 +15,21 @@
           Airclaim is completed.
         </template>
       </div>
-      <div class="q-ma-md q-mt-lg" v-if="claimInfo&&isDisplayingStakedMessage()">
-        To be able to claim you need to have <b>
+      <div class="q-mt-lg" v-if="claimInfo&&isDisplayingStakedMessage() && userStakeRequirement">
+        To be able to claim, you need a total of <b>
           {{
-            claimInfo.respFreeosRecord && claimInfo.respFreeosRecord.stake_requirement
+            userStakeRequirement
           }}
         </b> staked on your account.
+      </div>
+      <div class="q-mb-md">
+        More Information staking/unstaking you can find <router-link :to="{name: 'stake'}" class="text-primary" >here</router-link>.
       </div>
       <div class="q-mt-lg q-mb-lg" v-if="isDisplayingHoldingRequirement()">
         To be able to Claim, you need a total of <b>{{currentIteration.tokens_required}} FREEOS</b> in your account. <br>
         Please <span @click="$router.push('/transfer')" class="text-primary" style="text-decoration: underline; cursor: pointer;">transfer</span> an additional
         <b>{{currentIteration.tokens_required - parseFloat(totalFreeos)}} FREEOS</b>
         in order to Claim.
-      </div>
-      <div v-if="claimInfo&&isDisplayingStakedMessage()">
-        More Information staking/unstaking you can find <span @click="$router.push('/stake')" class="text-primary" style="text-decoration: underline; cursor: pointer;">here</span>
       </div>
 <!--      <div class="q-ma-md q-mt-xl">-->
 <!--        You can get notified about upcoming claim via email or pop-notification on your mobile device-->
@@ -77,7 +77,10 @@ export default {
       currentIteration: state => state.calendar.currentIteration,
       nextCalendar: state => state.calendar.nextCalendar,
       vestedBalance: state => state.vest.balance,
-      freeosInAccount: state => state.account.claimInfo.freeosInAccount
+      freeosInAccount: state => state.account.claimInfo.freeosInAccount,
+      stakedInfo: state => state.account.claimInfo.stakedInfo,
+      userCount: state => state.account.claimInfo.statistics.usercount,
+      stakeRequirmentList: state => state.account.claimInfo.stakeRequirmentList
     }),
     ...mapGetters('account', ['claimInfo']),
     ...mapGetters('claim', ['isClaimed', 'userAfterBalance', 'userPreviousBalance']),
@@ -87,6 +90,32 @@ export default {
     totalFreeos () {
       const amount = getAbsoluteAmount(this.claimInfo.freeosInAccount) + getAbsoluteAmount(this.vestedBalance)
       return amount + ' FREEOS'
+    },
+    usersCurrentStakeReq () {
+      const result = this.stakeRequirmentList.findIndex((r, index) => {
+        if (this.userCount < r.threshold) {
+          return index
+        }
+      })
+      return this.stakeRequirmentList[result - 1]
+    },
+    userStakeRequirement () {
+      if (!this.stakedInfo) {
+        return ''
+      }
+      const accountType = String.fromCharCode(this.stakedInfo.account_type)
+      if (!accountType) {
+        return ''
+      }
+      let requirement = null
+      for (const [key, value] of Object.entries(this.usersCurrentStakeReq)) {
+        const requirementType = key.split('_')
+        if (requirementType[1] === accountType) {
+          requirement = value
+          break
+        }
+      }
+      return requirement
     }
   },
   methods: {
