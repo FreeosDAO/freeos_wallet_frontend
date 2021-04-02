@@ -19,6 +19,7 @@
       :breakpoint="800"
       bordered
       content-class="bg-grey-0"
+      :style="'visibility: ' + (isAuthenticated ? 'visible' : 'hidden')"
     >
       <q-scroll-area class="fit">
         <q-list>
@@ -114,7 +115,7 @@ export default {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
     },
-    ...mapActions('account', ['checkIfLoggedIn', 'connectWallet', 'logout', 'getAccountInfo', 'getClaimDetailInfo']),
+    ...mapActions('account', ['checkIfLoggedIn', 'connectWallet', 'logout', 'getAccountInfo', 'getClaimDetailInfo', 'getRespMasterSwitch']),
     ...mapActions('calendar', ['getClaimCalendar'])
   },
   watch: {
@@ -123,6 +124,7 @@ export default {
       handler: function (val) {
         if (val && this.accountName) {
           this.getAccountInfo()
+          this.getRespMasterSwitch()
           this.getClaimDetailInfo(this.iterationNumber)
         }
         if (val && this.$route.query.returnUrl) {

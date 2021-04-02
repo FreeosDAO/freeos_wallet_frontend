@@ -90,7 +90,6 @@ export const logout = async function ({ commit }) {
 }
 
 export function getAccountInfo (state) {
-  state.dispatch('getRespMasterSwitch')
   state.dispatch('GetFreeosRecord')
   state.dispatch('getLiquidInAccount')
   state.dispatch('getStatistics')

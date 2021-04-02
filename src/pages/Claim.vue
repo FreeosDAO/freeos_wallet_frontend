@@ -5,7 +5,7 @@
           color="primary"
           label="register"
         @click="registerUser()" />
-        <p><small>(you are not register yet)</small></p>
+        <p><small>(you are not registered yet)</small></p>
       </div>
     <div v-if="claimInfo&&!isMasterSwitchOpen">
       <b>Freeos system is not currently operational. Please check back later.</b>
@@ -26,7 +26,7 @@
         <p>To be able to claim, you need a total of <b>
           {{
             userStakeRequirement
-          }}
+          }} XPR
         </b> staked on your account.</p>
         <p>
           More Information staking/unstaking you can find <router-link :to="{name: 'stake'}" class="text-primary" >here</router-link>.
@@ -38,17 +38,6 @@
         <b>{{currentIteration.tokens_required - parseFloat(totalFreeos)}} FREEOS</b>
         in order to Claim.
       </div>
-<!--      <div class="q-ma-md q-mt-xl">-->
-<!--        You can get notified about upcoming claim via email or pop-notification on your mobile device-->
-<!--      </div>-->
-<!--      <div class="q-ma-md">-->
-<!--        <span class="q-mr-lg">Notification</span>-->
-<!--        <q-toggle-->
-<!--          :label="isNotification ? 'ON' : 'OFF'"-->
-<!--          color="green"-->
-<!--          v-model="isNotification"-->
-<!--        />-->
-<!--      </div>-->
     </div>
     <q-dialog v-model="isShowSuccessDialog">
       <q-card>

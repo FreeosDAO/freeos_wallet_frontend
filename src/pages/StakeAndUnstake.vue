@@ -6,7 +6,7 @@
           color="primary"
           label="register"
         @click="registerUser()" />
-        <p><small>(you are not register yet)</small></p>
+        <p><small>(you are not registered yet)</small></p>
       </div>
       <div class="col-xs-10 col-sm-5 q-mb-lg" v-else-if="!stakedValue">
         <stake-card v-if="userCanStake"/>
