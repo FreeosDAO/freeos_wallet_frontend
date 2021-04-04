@@ -169,10 +169,10 @@ export async function getResAirKey (state) {
   })
 
   const val = {
-    key: 'respAirKey',
+    key: 'airKey',
     value: result.rows.length > 0 ? result.rows[0].balance : null
   }
-  state.commit('setClaimAttributeVal', val)
+  state.commit('setValue', val)
 }
 
 export async function getUserStakedInfo (state) {

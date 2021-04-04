@@ -32,7 +32,7 @@
           More Information staking/unstaking you can find <router-link :to="{name: 'stake'}" class="text-primary" >here</router-link>.
         </p>
       </div>
-      <div class="q-mt-lg q-mb-lg" v-if="isDisplayingHoldingRequirement() && !isUserHasAirKey">
+      <div class="q-mt-lg q-mb-lg" v-if="isDisplayingHoldingRequirement() && !userHasAirKey">
         To be able to Claim, you need a total of <b>{{currentIteration.tokens_required}} FREEOS</b> in your account. <br>
         Please <span @click="$router.push('/transfer')" class="text-primary" style="text-decoration: underline; cursor: pointer;">transfer</span> an additional
         <b>{{currentIteration.tokens_required - parseFloat(totalFreeos)}} FREEOS</b>
@@ -76,17 +76,12 @@ export default {
       freeosInAccount: state => state.account.claimInfo.freeosInAccount,
       stakedInfo: state => state.account.claimInfo.stakedInfo,
       userCount: state => state.account.claimInfo.statistics.usercount,
-      stakeRequirmentList: state => state.account.claimInfo.stakeRequirmentList,
-      airKey: state => state.account.claimInfo.respAirKey
+      stakeRequirmentList: state => state.account.claimInfo.stakeRequirmentList
     }),
-    ...mapGetters('account', ['claimInfo']),
+    ...mapGetters('account', ['claimInfo', 'userHasAirKey']),
     ...mapGetters('claim', ['isClaimed', 'userAfterBalance', 'userPreviousBalance']),
     isMasterSwitchOpen () {
       return Number(this.claimInfo.respMasterSwitch.value) === 1
-    },
-    isUserHasAirKey () {
-      const amount = getAbsoluteAmount(this.airKey)
-      return amount !== 0
     },
     totalFreeos () {
       const amount = getAbsoluteAmount(this.claimInfo.freeosInAccount) + getAbsoluteAmount(this.vestedBalance)
@@ -154,7 +149,7 @@ export default {
         return true
       }
 
-      if (this.isUserHasAirKey) {
+      if (this.userHasAirKey) {
         if (!this.claimInfo.respIsUserAlreadyClaimed) {
           return false
         }

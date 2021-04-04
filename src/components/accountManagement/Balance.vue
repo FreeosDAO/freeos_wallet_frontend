@@ -20,7 +20,9 @@
       <balance-vest />
       <div class="row text-green text-weight-bold">
         <div class="col-5">Total FREEOS: </div>
-        <div class="col-5">{{totalFreeos}}</div>
+        <div class="col-5 flex items-center">{{totalFreeos}}
+          <q-icon name="vpn_key" class="q-ml-md" title="air key" v-if="userHasAirKey"/>
+        </div>
       </div>
     </div>
   </div>
@@ -34,7 +36,7 @@ export default {
     ...mapState({
       vestedBalance: state => state.vest.balance
     }),
-    ...mapGetters('account', ['claimInfo']),
+    ...mapGetters('account', ['claimInfo', 'userHasAirKey']),
     currency () {
       if (!this.claimInfo.liquidInAccount) {
         return ''
