@@ -200,6 +200,27 @@ export async function getUserStakedInfo (state) {
   state.commit('setClaimAttributeVal', val)
 }
 
+export async function reVerifyUser ({ state }, accountName) {
+  try {
+    const actions = [{
+      account: process.env.AIRCLAIM_CONTRACT,
+      name: 'reverify',
+      authorization: [{
+        actor: accountName,
+        permission: 'active'
+      }],
+      data: {
+        user: accountName
+      }
+    }]
+    const result = await ProtonSDK.sendTransaction(actions)
+    notifyAlert(1, 'Re-Verify successfully')
+    return result
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 export async function getFreeosInfo (state) {
   const result = await connect({
     json: true,

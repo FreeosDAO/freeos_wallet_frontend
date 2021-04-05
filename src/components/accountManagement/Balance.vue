@@ -24,6 +24,9 @@
           <q-icon name="vpn_key" class="q-ml-md" title="air key" v-if="userHasAirKey"/>
         </div>
       </div>
+      <div class="row q-mt-md">
+        <q-btn label="Re-Verify User" color="primary" @click="reVerifyUser(accountName)" no-caps />
+      </div>
     </div>
   </div>
 </template>
@@ -34,6 +37,7 @@ import BalanceVest from './BalanceVest'
 export default {
   computed: {
     ...mapState({
+      accountName: state => state.account.accountName,
       vestedBalance: state => state.vest.balance
     }),
     ...mapGetters('account', ['claimInfo', 'userHasAirKey']),
@@ -55,7 +59,8 @@ export default {
     ...mapActions({
       getLiquidInAccount: 'account/getLiquidInAccount',
       getUserStakedInfo: 'account/getUserStakedInfo',
-      getFreeosInfo: 'account/getFreeosInfo'
+      getFreeosInfo: 'account/getFreeosInfo',
+      reVerifyUser: 'account/reVerifyUser'
     })
   },
   mounted () {
