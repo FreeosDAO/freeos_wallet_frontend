@@ -1,12 +1,13 @@
 <template>
   <div class="text-center">
     <div class="col-xs-10 col-sm-5 q-mb-lg" v-if="!stakedInfo">
-        <q-btn
-          color="primary"
-          label="register"
-        @click="registerUser()" />
-        <p><small>(you are not registered yet)</small></p>
-      </div>
+      <q-btn
+        color="primary"
+        label="register"
+        @click="registerUser()"
+      />
+      <p><small>(you are not registered yet)</small></p>
+    </div>
     <div v-if="claimInfo&&!isMasterSwitchOpen">
       <b>Freeos system is not currently operational. Please check back later.</b>
     </div>
