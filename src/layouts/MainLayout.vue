@@ -51,11 +51,20 @@
 
     <q-footer bordered class="bg-dark text-white" >
       <q-toolbar>
-        <q-toolbar-title>
-          <q-avatar >
-            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
-          </q-avatar>
-        </q-toolbar-title>
+        <!-- Begin Mailchimp Signup Form -->
+        <link href="//cdn-images.mailchimp.com/embedcode/slim-10_7.css" rel="stylesheet" type="text/css">
+        <div id="mc_embed_signup" class="full-width">
+          <form action="https://freeos.us1.list-manage.com/subscribe/post?u=f0bd481181736945f0713d31e&amp;id=6b4c9b07fb" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+            <div id="mc_embed_signup_scroll" class="row justify-center">
+              <input type="email" value="" name="EMAIL" class="email q-input" id="mce-EMAIL" placeholder="email address" required autocomplete="off"/>
+              <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+              <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_f0bd481181736945f0713d31e_6b4c9b07fb" tabindex="-1" value=""></div>
+              <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+            </div>
+          </form>
+        </div>
+
+        <!--End mc_embed_signup-->
       </q-toolbar>
     </q-footer>
   </q-layout>
@@ -140,5 +149,8 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style>
+#mc_embed_signup input.button {
+  background: var(--q-color-primary) !important;
+}
 </style>
