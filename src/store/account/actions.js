@@ -1,8 +1,10 @@
 import notifyAlert from 'src/services/notify-alert'
 import { connect } from 'src/utils/smartContractRequest'
 import ProtonSDK from '../../utils/proton'
+import { Loading } from 'quasar'
 
 export async function checkIfLoggedIn (state) {
+  Loading.show()
   const { auth } = await ProtonSDK.restoreSession()
   if (auth && auth.actor && auth.permission) {
     state.commit('setAccount', {
@@ -10,6 +12,9 @@ export async function checkIfLoggedIn (state) {
       walletId: ProtonSDK.link.walletType
     })
   }
+  setTimeout(() => {
+    Loading.hide()
+  }, 1000)
 }
 
 export async function connectWallet (state, name) {
