@@ -12,11 +12,15 @@ export async function checkIfLoggedIn (state) {
   }
 }
 
-export function connectWallet (state, name) {
+export async function connectWallet (state, name) {
+  const { auth } = await ProtonSDK.restoreSession()
+  const isLogin = auth && auth.actor && auth.permission
+  if (!isLogin) {
+    state.dispatch('connectProton', name)
+  }
   // if (name === 'scatter') {
   //   state.dispatch('connectScatter', 'scatter')
   // } else if (name === 'anchor') {
-  state.dispatch('connectProton', name)
   // }
 }
 
