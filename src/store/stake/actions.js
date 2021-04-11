@@ -2,26 +2,6 @@ import notifyAlert from 'src/services/notify-alert'
 import { RpcError } from 'eosjs'
 import ProtonSDK from '../../utils/proton'
 
-export async function onRegisterUser ({ state }, accountName) {
-  try {
-    const actions = [{
-      account: process.env.AIRCLAIM_CONTRACT,
-      name: 'reguser',
-      authorization: [{
-        actor: accountName,
-        permission: 'active'
-      }],
-      data: {
-        user: accountName
-      }
-    }]
-    const result = await ProtonSDK.sendTransaction(actions)
-    return result
-  } catch (e) {
-    console.log(e)
-  }
-}
-
 export async function actionStake ({ state }, data) {
   try {
     const { amount, accountName } = data
@@ -40,8 +20,8 @@ export async function actionStake ({ state }, data) {
       }
     }]
     const result = await ProtonSDK.sendTransaction(actions)
-    if (result.processed.receipt.status === 'executed') {
-      notifyAlert('success', result.processed.action_traces[0].console + 'success')
+    if (result.processed.receipt.status !== 'executed') {
+      notifyAlert('err', 'The action could not be completed. Please try later')
     }
     return result
   } catch (e) {

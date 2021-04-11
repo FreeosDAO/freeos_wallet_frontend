@@ -63,6 +63,7 @@
             </div>
           </form>
         </div>
+        <div class="text-center">Version {{ versionNumber }}</div>
 
         <!--End mc_embed_signup-->
       </q-toolbar>
@@ -99,7 +100,11 @@ export default {
       isShowDrawerButton: false,
       drawer: false,
       selectedItemLabel: null,
-      menuList
+      menuList,
+      versionNumber: process.env.VERSION_NUMBER,
+      silentSecond: 0,
+      timeOutSecond: 900, // 15 minutes
+      countdownInterval: null
     }
   },
   computed: {
@@ -113,6 +118,8 @@ export default {
     Balance
   },
   methods: {
+    ...mapActions('account', ['checkIfLoggedIn', 'connectWallet', 'logout', 'getAccountInfo', 'getClaimDetailInfo', 'getRespMasterSwitch']),
+    ...mapActions('calendar', ['getClaimCalendar']),
     onSigninFinish (event) {
       if (event.isFinished) {
         this.isShowDrawerButton = true
@@ -124,17 +131,44 @@ export default {
       (this.$route.path !== menuItem.route) && this.$router.push(menuItem.route)
       this.selectedItemLabel = menuItem.label
     },
-    ...mapActions('account', ['checkIfLoggedIn', 'connectWallet', 'logout', 'getAccountInfo', 'getClaimDetailInfo', 'getRespMasterSwitch']),
-    ...mapActions('calendar', ['getClaimCalendar'])
+    onMouseMove () {
+      const self = this
+      window.document.onmousemove = function () {
+        if (self.isAuthenticated) {
+          self.startCountdown()
+        } else {
+          clearInterval(this.countdownInterval)
+        }
+      }
+    },
+    startCountdown () {
+      this.silentSecond = 0
+      clearInterval(this.countdownInterval)
+      this.countdownInterval = setInterval(() => {
+        this.countDown()
+      }, 1000)
+    },
+    countDown () {
+      this.silentSecond = this.silentSecond + 1
+      if (this.silentSecond > this.timeOutSecond) {
+        clearInterval(this.countdownInterval)
+        this.$q.notify({
+          message: 'no activity on website for 15 minutes, automatically logout. please login again',
+          color: 'positive'
+        })
+
+        this.logout()
+      }
+    }
   },
   watch: {
     isAuthenticated: {
       immediate: true,
-      handler: function (val) {
+      handler: async function (val) {
         if (val && this.accountName) {
-          this.getAccountInfo()
-          this.getRespMasterSwitch()
-          this.getClaimDetailInfo(this.iterationNumber)
+          await this.getAccountInfo()
+          await this.getRespMasterSwitch()
+          await this.getClaimDetailInfo(this.iterationNumber)
         }
         if (val && this.$route.query.returnUrl) {
           this.$router.push({ path: this.$route.query.returnUrl })
@@ -143,6 +177,7 @@ export default {
     }
   },
   created () {
+    this.onMouseMove()
     this.getClaimCalendar()
     this.checkIfLoggedIn()
   }

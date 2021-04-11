@@ -3,6 +3,26 @@ import { connect } from 'src/utils/smartContractRequest'
 import ProtonSDK from '../../utils/proton'
 import { Loading } from 'quasar'
 
+export async function onRegisterUser ({ state }, accountName) {
+  try {
+    const actions = [{
+      account: process.env.AIRCLAIM_CONTRACT,
+      name: 'reguser',
+      authorization: [{
+        actor: accountName,
+        permission: 'active'
+      }],
+      data: {
+        user: accountName
+      }
+    }]
+    const result = await ProtonSDK.sendTransaction(actions)
+    return result
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 export async function checkIfLoggedIn (state) {
   Loading.show()
   const { auth } = await ProtonSDK.restoreSession()
@@ -214,7 +234,9 @@ export async function reVerifyUser ({ state }, accountName) {
       }
     }]
     const result = await ProtonSDK.sendTransaction(actions)
-    notifyAlert(1, 'Re-Verify successfully')
+    if (result.processed.receipt.status === 'executed') {
+      notifyAlert(1, 'Re-Verify successfully')
+    }
     return result
   } catch (e) {
     console.log(e)

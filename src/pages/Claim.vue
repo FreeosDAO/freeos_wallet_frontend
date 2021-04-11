@@ -13,7 +13,7 @@
     </div>
     <div v-if="claimInfo&&isMasterSwitchOpen">
       <div class="q-ma-md q-mt-lg">
-        <q-btn :disable="isDisableClaim()" :color="isDisableClaim() ? 'dark' : 'primary'" @click="() => onClaim(accountName)" no-caps label="Claim FreeOS" />
+        <q-btn :disable="isDisableClaim" :color="isDisableClaim ? 'dark' : 'primary'" @click="() => onClaim(accountName)" no-caps label="Claim FreeOS" />
       </div>
       <div class="q-ma-md" v-if="claimInfo&&claimInfo.respIsUserAlreadyClaimed">
         <template v-if=" nextCalendar">
@@ -65,7 +65,8 @@ export default {
   data () {
     return {
       isNotification: true,
-      isShowSuccessDialog: false
+      isShowSuccessDialog: false,
+      isDisableClaim: false
     }
   },
   computed: {
@@ -116,12 +117,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions('account', ['getAccountInfo']),
-    ...mapActions('stake', ['onRegisterUser']),
+    ...mapActions('account', ['getAccountInfo', 'onRegisterUser']),
     ...mapActions('claim', ['actionClaim']),
     async onClaim (accountName) {
       await this.actionClaim(accountName)
       this.getAccountInfo()
+      this.checkClaimBtnStatus()
     },
     async registerUser () {
       await this.onRegisterUser(this.accountName)
@@ -132,46 +133,51 @@ export default {
       const startDate = new Date().getTime()
       return parseInt((endDate - startDate) / (1000 * 60 * 60 * 24))
     },
-    isDisableClaim () {
+    checkClaimBtnStatus () {
       if (!this.isMasterSwitchOpen) {
-        return true
+        this.isDisableClaim = true
+        return
       }
       // For it to to in a valid claim week. i.e. NOT week 0
       if (this.currentIteration.iteration_number === 0) {
-        return true
+        this.isDisableClaim = true
+        return
       }
       // if week 1, stake_requirement can be 0
       if (this.currentIteration.iteration_number === 1 && this.isMasterSwitchOpen) {
-        return false
+        this.isDisableClaim = false
+        return
       }
 
       // 2. For the user to have staked. i.e. their 'stake' field in the user record is equal to the 'stake_requirement' field.
       if (!this.hasUserStaked()) {
-        return true
+        this.isDisableClaim = true
+        return
       }
 
       if (this.userHasAirKey) {
         if (!this.claimInfo.respIsUserAlreadyClaimed) {
-          return false
+          this.isDisableClaim = false
+          return
         }
       }
       // 3. For the user to have balance of FREEOS >= the holding requirement for the week (go to week record and look at 'tokens_required'
       if (getAbsoluteAmount(this.totalFreeos) >= this.currentIteration.tokens_required) {
         // 5. They have not already claimed in the current week (see the table read required in the ‘Suggested Coding Activities’ section).
         if (!this.claimInfo.respIsUserAlreadyClaimed) {
-          return false
+          this.isDisableClaim = false
+          return
         }
       }
-      return true
+      this.isDisableClaim = true
     },
     isDisplayingStakedMessage () {
-      if (!this.isDisableClaim()) {
+      if (!this.isDisableClaim) {
         return false
       }
       if (this.currentIteration.iteration_number !== 0 && this.isMasterSwitchOpen && !this.hasUserStaked()) {
         return true
       }
-      return false
     },
     hasUserStaked () {
       if (!this.claimInfo.respFreeosRecord) {
@@ -202,6 +208,13 @@ export default {
           }
         }
       }
+    },
+    claimInfo: {
+      handler (val) {
+        this.checkClaimBtnStatus()
+      },
+      immediate: true,
+      deep: true
     }
   }
 }

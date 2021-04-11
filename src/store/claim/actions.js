@@ -30,9 +30,9 @@ export const actionClaim = async function ({ commit }, accountName) {
       }
     }]
     const result = await ProtonSDK.sendTransaction(actions)
-
-    if (result.processed.receipt.status === 'executed') {
-      notifyAlert('success', result.processed.action_traces[0].console)
+    if (result.processed.receipt.status !== 'executed') {
+      notifyAlert('err', 'The action could not be completed. Please try later')
+    } else {
       commit('setIsClaimed', true)
     }
     return result

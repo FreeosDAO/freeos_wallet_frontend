@@ -20,7 +20,7 @@
       <balance-vest />
       <div class="row text-green text-weight-bold">
         <div class="col-5">Total FREEOS: </div>
-        <div class="col-5 flex items-center">{{totalFreeos}}
+        <div class="col-7 flex items-center">{{totalFreeos}}
           <q-icon name="vpn_key" class="q-ml-md" title="air key" v-if="userHasAirKey"/>
         </div>
       </div>
@@ -64,11 +64,13 @@ export default {
     })
   },
   mounted () {
-    setInterval(() => {
-      this.getLiquidInAccount()
-      this.getUserStakedInfo()
-      this.getFreeosInfo()
-    }, 10000)
+    if (process.env.NODE_ENV !== 'development') {
+      setInterval(() => {
+        this.getLiquidInAccount()
+        this.getUserStakedInfo()
+        this.getFreeosInfo()
+      }, 10000)
+    }
   }
 }
 </script>

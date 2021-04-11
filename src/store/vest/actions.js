@@ -1,5 +1,5 @@
 import { connect } from 'src/utils/smartContractRequest'
-import { Notify } from 'quasar'
+import notifyAlert from 'src/services/notify-alert'
 import ProtonSDK from '../../utils/proton'
 
 export async function getVestedRecord (state, accountName) {
@@ -43,17 +43,11 @@ export async function unVest (state, accountName) {
 
     if (result.processed.receipt.status === 'executed') {
       const response = result.processed.action_traces[0].console
-      Notify.create({
-        message: response,
-        color: 'positive'
-      })
+      notifyAlert('success', response)
       state.dispatch('getVestedRecord', accountName)
       state.dispatch('getUnVestHistory', accountName)
     } else {
-      Notify.create({
-        message: 'The action could not be completed. Please try later',
-        color: 'negative'
-      })
+      notifyAlert('err', 'The action could not be completed. Please try later')
     }
   } catch (e) {
     console.log(e)

@@ -1,5 +1,3 @@
-import notifyAlert from 'src/services/notify-alert'
-
 export const setAccount = function (state, { accountName, walletId }) {
   if (!state.accountName) {
     localStorage.walletId = walletId
@@ -32,7 +30,6 @@ export const clearAccount = function (state) {
   if (this.$router.currentRoute.fullPath !== '/') {
     this.$router.push({ path: '/' })
   }
-  notifyAlert(1, 'logout successfully')
 }
 
 export const setConnecting = (state, connecting) => {

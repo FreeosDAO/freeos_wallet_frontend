@@ -48,8 +48,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('stake', ['onRegisterUser']),
-    ...mapActions('account', ['getAccountInfo']),
+    ...mapActions('account', ['getAccountInfo', 'onRegisterUser']),
     userCanStake () {
       if (getAbsoluteAmount(this.liquidInAccount.balance) > 0) {
         return true
