@@ -11,3 +11,25 @@
     </q-card>
   </div>
 </template>
+<script>
+import { mapState, mapActions, mapGetters } from 'vuex'
+
+export default {
+  computed: {
+    ...mapState({
+      accountName: state => state.account.accountName
+    }),
+    ...mapGetters('account', ['claimInfo']),
+    stakedAmount () {
+      return this.claimInfo.stakedInfo.stake
+    }
+  },
+  methods: {
+    ...mapActions('stake', ['getUnStakecncl']),
+    ...mapActions('account', ['getAccountInfo'])
+  },
+  created () {
+    // this.getUnStakecncl(this.accountName)
+  }
+}
+</script>

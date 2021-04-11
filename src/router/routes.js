@@ -6,7 +6,7 @@ const routes = [
       { path: '', component: () => import('pages/Index.vue') },
       { path: '/claim', component: () => import('pages/Claim.vue') },
       { path: '/stake', name: 'stake', component: () => import('pages/StakeAndUnstake.vue') },
-      { path: '/transfer', component: () => import('pages/Transfer.vue') }
+      { path: '/transfer', name: 'transfer', component: () => import('pages/Transfer.vue') }
     ]
   },
 

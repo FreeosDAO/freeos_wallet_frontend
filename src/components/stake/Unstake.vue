@@ -30,7 +30,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('unstake', ['actionUnstake']),
+    ...mapActions('stake', ['actionUnstake']),
     ...mapActions('account', ['getAccountInfo']),
     async onUnstake () {
       await this.actionUnstake(this.accountName)

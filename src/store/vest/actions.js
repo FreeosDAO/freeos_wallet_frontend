@@ -23,6 +23,7 @@ export async function getUnVestHistory (state, data) {
     limit: 1,
     lower_bound: iterationNumber
   })
+  console.log(result.rows)
   state.commit('SET_UNVEST_HISTORY', result.rows)
 }
 export async function unVest (state, accountName) {
@@ -40,13 +41,7 @@ export async function unVest (state, accountName) {
       }
     }]
     const result = await ProtonSDK.sendTransaction(actions)
-
-    if (result.processed.receipt.status === 'executed') {
-      const response = result.processed.action_traces[0].console
-      notifyAlert('success', response)
-      state.dispatch('getVestedRecord', accountName)
-      state.dispatch('getUnVestHistory', accountName)
-    } else {
+    if (result.processed.receipt.status !== 'executed') {
       notifyAlert('err', 'The action could not be completed. Please try later')
     }
   } catch (e) {

@@ -23,7 +23,7 @@
           Airclaim is completed.
         </template>
       </div>
-      <div class="q-mt-lg" v-if="claimInfo&&isDisplayingStakedMessage() && userStakeRequirement">
+      <div class="q-mt-lg" v-if="claimInfo&&isDisplayingStakedMessage && userStakeRequirement">
         <p>To be able to claim, you need a total of <b>
           {{
             userStakeRequirement
@@ -33,7 +33,7 @@
           More Information staking/unstaking you can find <router-link :to="{name: 'stake'}" class="text-primary" >here</router-link>.
         </p>
       </div>
-      <div class="q-mt-lg q-mb-lg" v-if="isDisplayingHoldingRequirement() && !userHasAirKey">
+      <div class="q-mt-lg q-mb-lg" v-if="isDisplayingHoldingRequirement && !userHasAirKey">
         To be able to Claim, you need a total of <b>{{currentIteration.tokens_required}} FREEOS</b> in your account. <br>
         Please <span @click="$router.push('/transfer')" class="text-primary" style="text-decoration: underline; cursor: pointer;">transfer</span> an additional
         <b>{{currentIteration.tokens_required - parseFloat(totalFreeos)}} FREEOS</b>
@@ -66,7 +66,9 @@ export default {
     return {
       isNotification: true,
       isShowSuccessDialog: false,
-      isDisableClaim: false
+      isDisableClaim: false,
+      isDisplayingHoldingRequirement: false,
+      isDisplayingStakedMessage: false
     }
   },
   computed: {
@@ -171,12 +173,12 @@ export default {
       }
       this.isDisableClaim = true
     },
-    isDisplayingStakedMessage () {
+    checkIsDisplayStakingMsg () {
       if (!this.isDisableClaim) {
-        return false
+        this.isDisplayingStakedMessage = false
       }
       if (this.currentIteration.iteration_number !== 0 && this.isMasterSwitchOpen && !this.hasUserStaked()) {
-        return true
+        this.isDisplayingStakedMessage = true
       }
     },
     hasUserStaked () {
@@ -189,12 +191,13 @@ export default {
       //   (this.claimInfo.respFreeosRecord.stake !== this.claimInfo.respFreeosRecord.stake_requirement)
       // )
     },
-    isDisplayingHoldingRequirement () {
+    checkHoldingReq () {
       if (!this.currentIteration) {
-        return false
+        this.isDisplayingHoldingRequirement = false
       }
       const tokensRequired = this.currentIteration.tokens_required
-      return (getAbsoluteAmount(this.claimInfo.freeosInAccount) < tokensRequired)
+
+      this.isDisplayingHoldingRequirement = (getAbsoluteAmount(this.claimInfo.freeosInAccount) < tokensRequired)
     }
   },
   watch: {
@@ -212,6 +215,8 @@ export default {
     claimInfo: {
       handler (val) {
         this.checkClaimBtnStatus()
+        this.checkHoldingReq()
+        this.checkIsDisplayStakingMsg()
       },
       immediate: true,
       deep: true

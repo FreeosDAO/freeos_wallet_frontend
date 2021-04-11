@@ -4,7 +4,6 @@ import Vuex from 'vuex'
 import account from './account'
 import claim from './claim'
 import stake from './stake'
-import unstake from './unstake'
 import transfer from './transfer'
 import vest from './vest'
 import calendar from './calendar'
@@ -25,7 +24,6 @@ export default function (/* { ssrContext } */) {
       account,
       claim,
       stake,
-      unstake,
       transfer,
       vest,
       calendar

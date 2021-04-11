@@ -8,7 +8,7 @@
         label="Unvest"
         :color="!canUnvest ? 'dark' : 'primary'"
         no-caps
-        @click="unvest(accountName)"
+        @click="onUnVest"
         :disable="!canUnvest"
       />
     </div>
@@ -40,15 +40,23 @@ export default {
       unvest: 'vest/unVest',
       getVestedRecord: 'vest/getVestedRecord',
       getUnVestHistory: 'vest/getUnVestHistory'
-    })
+    }),
+    async onUnVest () {
+      await this.unvest(this.accountName)
+      this.getVestedRecord(this.accountName)
+      this.getUnVest()
+    },
+    getUnVest () {
+      const data = {
+        accountName: this.accountName,
+        iterationNumber: this.iterationNumber
+      }
+      this.getUnVestHistory(data)
+    }
   },
   mounted () {
     this.getVestedRecord(this.accountName)
-    const data = {
-      accountName: this.accountName,
-      iterationNumber: this.iterationNumber
-    }
-    this.getUnVestHistory(data)
+    this.getUnVest()
   }
 }
 </script>
